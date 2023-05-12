@@ -3,6 +3,8 @@ pub enum Error {
     FixPathEnv(#[from] fix_path_env::Error),
     IO(#[from] std::io::Error),
     Eyre(#[from] color_eyre::eyre::Error),
+    Websocket(#[from] tungstenite::Error),
+    WalletError(#[from] ethers::signers::WalletError),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -15,6 +17,8 @@ impl std::fmt::Display for Error {
             FixPathEnv(e) => write!(f, "FixPathEnvError: {}", e),
             IO(e) => write!(f, "IOError: {}", e),
             Eyre(e) => write!(f, "EyreError: {}", e),
+            Websocket(e) => write!(f, "WebsocketError: {}", e),
+            WalletError(e) => write!(f, "WalletError: {}", e),
         }
     }
 }
