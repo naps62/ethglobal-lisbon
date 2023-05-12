@@ -16,6 +16,7 @@ export default function Home() {
   const [accounts, setAccounts] = useState(mockAccounts);
   const [pendingTx, setPendingTx] = useState({});
   const [impersonate, setImpersonate] = useState("");
+  const [accounts, setAccounts] = useState(mockAccounts);
 
   useEffect(() => {
     const unlisten = listen("tx-review", ({ payload }: { payload: any }) => {
