@@ -94,4 +94,56 @@ impl ContextInner {
             .send(IronEvent::RefreshConnections)
             .unwrap();
     }
+
+    pub fn set_current_network(&mut self, new_current_network: String) -> Result<()> {
+        let previous_network = self.get_current_network();
+        self.current_network = new_current_network;
+        let new_network = self.get_current_network();
+
+        if previous_network.chain_id != new_network.chain_id {
+            // update signer
+            self.wallet.update_chain_id(new_network.chain_id);
+
+            // broadcast to peers
+            self.broadcast(json!({
+                "method": "chainChanged",
+                "params": {
+                    "chainId": format!("0x{:x}", new_network.chain_id),
+                    "networkVersion": new_network.name
+                }
+            }));
+            self.window_snd
+                .as_ref()
+                .unwrap()
+                .send(IronEvent::RefreshNetwork)?
+        }
+
+        Ok(())
+    }
+
+    pub fn set_current_network_by_id(&mut self, new_chain_id: u32) -> Result<()> {
+        let new_network = self
+            .networks
+            .values()
+            .find(|n| n.chain_id == new_chain_id)
+            .unwrap();
+
+        self.set_current_network(new_network.name.clone())?;
+
+        Ok(())
+    }
+
+    pub fn set_networks(&mut self, networks: Vec<Network>) {
+        self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
+    }
+
+    pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {
+        self.peers.iter().for_each(|(_, peer)| {
+            peer.sender
+                .send(serde_json::to_value(&msg).unwrap())
+                .unwrap_or_else(|e| {
+                    warn!("Failed to send message to peer: {}", e);
+                });
+        });
+    }
 }
