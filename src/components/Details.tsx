@@ -32,7 +32,7 @@ interface Asset {
 
 function Assets({ assets }: { assets: Asset[] }) {
   return (
-    <div>
+    <div className="w-full">
       {assets.map((asset) => (
         <Asset {...asset} />
       ))}
@@ -50,10 +50,12 @@ function Asset({
   balance: number;
 }) {
   return (
-    <div>
-      <img src={logo} alt={name} className="w-10 h-10" />
-      <div>{name}</div>
-      <div>{balance}</div>
+    <div className="flex border-b-2 w-full h-24 px-10 items-center justify-center">
+      <div className="flex items-center justify-between w-full">
+        <img src={logo} alt={name} className="w-10 h-10" />
+        <div>{name}</div>
+        <div>{balance}</div>
+      </div>
     </div>
   );
 }
