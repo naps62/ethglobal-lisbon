@@ -18,7 +18,7 @@ use serde_json::json;
 use tokio::sync::oneshot;
 
 use crate::app::Event;
-use crate::context::{Context, UnlockedContext};
+use crate::context::Context;
 
 pub struct Handler {
     io: MetaIoHandler<Context>,
