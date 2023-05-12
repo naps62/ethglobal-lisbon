@@ -44,7 +44,8 @@ impl ETHGlobalApp {
                 commands::get_networks,
                 commands::get_current_network,
                 commands::execute_tx,
-                commands::simulate_tx
+                commands::simulate_tx,
+                commands::impersonate
             ])
             .setup(|app| {
                 let handle = app.handle();

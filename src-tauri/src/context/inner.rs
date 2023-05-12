@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::net::SocketAddr;
 
 use ethers::providers::{Http, Provider};
-use ethers::types::H256;
+use ethers::types::{Address, H256};
 use ethers_core::k256::ecdsa::SigningKey;
 use log::warn;
 use serde::Serialize;
@@ -19,6 +19,7 @@ use crate::ws::Peer;
 
 #[derive(Debug)]
 pub struct ContextInner {
+    pub impersonate: Option<Address>,
     pub wallet: Wallet,
     pub networks: HashMap<String, Network>,
     // pub current_network: String,
@@ -46,6 +47,7 @@ impl ContextInner {
             peers: Default::default(),
             window_snd: None,
             rcv: Default::default(),
+            impersonate: None,
         }
     }
 
@@ -62,6 +64,21 @@ impl ContextInner {
             .update_chain_id(self.get_current_network().chain_id);
 
         Ok(())
+    }
+
+    pub fn impersonate(&mut self, addr: String) {
+        if addr.is_empty() {
+            self.impersonate = None;
+        } else if let Ok(addr) = addr.parse::<Address>() {
+            self.impersonate = Some(addr);
+        }
+
+        let result = self.impersonate.unwrap_or_else(|| self.wallet.address());
+
+        self.broadcast(json!({
+            "method": "accountsChanged",
+            "params": [result]
+        }));
     }
 
     pub fn get_current_network(&self) -> Network {

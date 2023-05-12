@@ -32,6 +32,17 @@ pub async fn get_wallet(ctx: Ctx<'_>) -> Result<Wallet> {
 }
 
 #[tauri::command]
+pub async fn impersonate(ctx: Ctx<'_>, address: String) -> Result<String> {
+    let mut ctx = ctx.lock().await;
+
+    ctx.impersonate(address);
+
+    Ok("hello".to_string())
+
+    // todo!();
+}
+
+#[tauri::command]
 pub async fn simulate_tx(
     ctx: Ctx<'_>,
     _impersonate: Option<Address>,

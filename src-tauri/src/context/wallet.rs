@@ -2,6 +2,7 @@
 
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
+use ethers::types::Address;
 use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::de::{self, MapAccess, Visitor};
@@ -62,6 +63,14 @@ impl Wallet {
             .collect()
     }
 
+    pub fn address(&self) -> Address {
+        self.signer.address()
+    }
+
+    pub fn checksummed_address(&self) -> String {
+        to_checksum(&self.signer.address(), None)
+    }
+
     pub fn derive_addresses(&self, indexes: u32) -> Result<Vec<String>> {
         Self::derive_addresses_with_mnemonic(&self.mnemonic, &self.derivation_path, indexes)
     }
@@ -79,10 +88,6 @@ impl Wallet {
             .build()
             .map_err(|e| e.to_string())
             .map(|v| v.with_chain_id(chain_id))
-    }
-
-    pub fn checksummed_address(&self) -> String {
-        to_checksum(&self.signer.address(), None)
     }
 
     pub fn update_chain_id(&mut self, chain_id: u32) {
