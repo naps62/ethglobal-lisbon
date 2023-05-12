@@ -163,4 +163,8 @@ impl ContextInner {
                 });
         });
     }
+
+    pub fn current_address(&self) -> Address {
+        self.impersonate.unwrap_or_else(|| self.wallet.address())
+    }
 }
