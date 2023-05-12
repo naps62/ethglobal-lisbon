@@ -1,31 +1,31 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function Details() {
-  const [active, setActive] = useState('assets');
+  const [active, setActive] = useState("assets");
   const [assets, setAssets] = useState([
     {
-      name: 'ETH',
-      logo: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880',
+      name: "ETH",
+      logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
       balance: 0.0,
     },
     {
-      name: 'USDC',
-      logo: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389',
+      name: "USDC",
+      logo: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389",
       balance: 0.0,
     },
   ]);
   const [transactions, setTransactions] = useState([
     {
-      direction: 'send',
+      direction: "send",
       amount: 0.0,
       date: new Date(),
-      address: '0x7546e9EA6f...22A5C',
+      address: "0x7546e9EA6f...22A5C",
     },
     {
-      direction: 'receive',
+      direction: "receive",
       amount: 0.0,
       date: new Date(),
-      address: '0x7546e9EA6f...22A5C',
+      address: "0x7546e9EA6f...22A5C",
     },
   ]);
 
@@ -33,8 +33,8 @@ export default function Details() {
     <div className="">
       <Menu active={active} setActive={setActive} />
       <div className="flex justify-center">
-        {active === 'assets' && <Assets assets={assets} />}
-        {active === 'activity' && <Activity transactions={transactions} />}
+        {active === "assets" && <Assets assets={assets} />}
+        {active === "activity" && <Activity transactions={transactions} />}
       </div>
     </div>
   );
@@ -49,7 +49,7 @@ function Assets({ assets }: { assets: Asset[] }) {
   return (
     <div className="w-full">
       {assets.map((asset) => (
-        <Asset {...asset} />
+        <Asset key={asset.name} {...asset} />
       ))}
     </div>
   );
@@ -99,17 +99,17 @@ function Menu({
     <div className="flex justify-around border-b-2">
       <div
         className={`${
-          active === 'assets' && 'text-blue-500 border-b-2 border-blue-500'
+          active === "assets" && "text-blue-500 border-b-2 border-blue-500"
         }`}
-        onClick={() => setActive('assets')}
+        onClick={() => setActive("assets")}
       >
         Assets
       </div>
       <div
         className={`${
-          active === 'activity' && 'text-blue-500 border-b-2 border-blue-500'
+          active === "activity" && "text-blue-500 border-b-2 border-blue-500"
         }`}
-        onClick={() => setActive('activity')}
+        onClick={() => setActive("activity")}
       >
         Activity
       </div>

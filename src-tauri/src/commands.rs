@@ -34,12 +34,14 @@ pub async fn get_wallet(ctx: Ctx<'_>) -> Result<Wallet> {
 #[tauri::command]
 pub async fn simulate_tx(
     ctx: Ctx<'_>,
-    _impersonate: Address,
+    _impersonate: Option<Address>,
     _params: jsonrpc_core::Params,
-) -> Result<()> {
+) -> Result<String> {
     let mut _ctx = ctx.lock().await;
 
-    todo!();
+    Ok("hello".to_string())
+
+    // todo!();
 }
 
 #[tauri::command]

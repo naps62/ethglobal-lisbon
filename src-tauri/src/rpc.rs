@@ -68,7 +68,6 @@ impl Handler {
             ($name:literal, $fn:path) => {
                 self.io
                     .add_method_with_meta($name, |params: Params, ctx: Context| async move {
-                        let ctx = ctx.lock().await;
                         $fn(params, ctx).await
                     });
             };
@@ -110,15 +109,18 @@ impl Handler {
         self_handler!("eth_signTypedData_v4", Self::eth_sign_typed_data_v4);
     }
 
-    async fn accounts(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+    async fn accounts(_: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
         Ok(json!([ctx.wallet.checksummed_address()]))
     }
 
-    async fn chain_id(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+    async fn chain_id(_: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
         Ok(json!(ctx.get_current_network().chain_id_hex()))
     }
 
-    async fn provider_state(_: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+    async fn provider_state(_: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
         let network = ctx.get_current_network();
 
         Ok(json!({
@@ -129,10 +131,8 @@ impl Handler {
         }))
     }
 
-    async fn switch_chain(
-        params: Params,
-        mut ctx: UnlockedContext<'_>,
-    ) -> Result<serde_json::Value> {
+    async fn switch_chain(params: Params, ctx: Context) -> Result<serde_json::Value> {
+        let mut ctx = ctx.lock().await;
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap();
         let chain_id_str = params[0].get("chainId").unwrap().clone();
         let chain_id = u32::from_str_radix(&chain_id_str[2..], 16).unwrap();
@@ -143,19 +143,20 @@ impl Handler {
         }
     }
 
-    async fn send_transaction(
-        params: Params,
-        mut ctx: UnlockedContext<'_>,
-    ) -> Result<serde_json::Value> {
-        ctx.window_snd
-            .as_ref()
-            .unwrap()
-            .send(Event::TxReview(params.clone()))
-            .unwrap();
+    async fn send_transaction(params: Params, ctx: Context) -> Result<serde_json::Value> {
+        let rcv = {
+            let mut ctx = ctx.lock().await;
+            ctx.window_snd
+                .as_ref()
+                .unwrap()
+                .send(Event::TxReview(params.clone()))
+                .unwrap();
 
-        let rnd: u64 = rand::Rng::gen(&mut rand::thread_rng());
-        let (snd, rcv) = oneshot::channel();
-        ctx.rcv.insert(rnd, snd);
+            let rnd: u64 = rand::Rng::gen(&mut rand::thread_rng());
+            let (snd, rcv) = oneshot::channel();
+            ctx.rcv.insert(rnd, snd);
+            rcv
+        };
 
         let params = rcv.await.unwrap();
 
@@ -170,6 +171,7 @@ impl Handler {
             .map(|v| U256::try_from(StringifiedNumeric::String(v)).unwrap())
             .unwrap_or_else(U256::default);
         let data = params.get("data");
+        let ctx = ctx.lock().await;
         let chain_id = ctx.get_current_network().chain_id;
 
         // TODO: ensure from == signer
@@ -211,7 +213,8 @@ impl Handler {
         }
     }
 
-    async fn eth_sign(params: Params, ctx: UnlockedContext<'_>) -> Result<serde_json::Value> {
+    async fn eth_sign(params: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let msg = params[0].as_ref().cloned().unwrap();
         let address = Address::from_str(&params[1].as_ref().cloned().unwrap()).unwrap();
@@ -230,10 +233,8 @@ impl Handler {
         }
     }
 
-    async fn eth_sign_typed_data_v4(
-        params: Params,
-        ctx: UnlockedContext<'_>,
-    ) -> Result<serde_json::Value> {
+    async fn eth_sign_typed_data_v4(params: Params, ctx: Context) -> Result<serde_json::Value> {
+        let ctx = ctx.lock().await;
         let params = params.parse::<Vec<Option<String>>>().unwrap();
         let _address = Address::from_str(&params[0].as_ref().cloned().unwrap()).unwrap();
         let data = params[1].as_ref().cloned().unwrap();
