@@ -27,7 +27,9 @@ impl Network {
             name: String::from("mainnet"),
             chain_id: 1,
             dev: false,
-            http_url: String::from("https://ethereum.publicnode.com"),
+            http_url: String::from(
+                "https://eth-mainnet.g.alchemy.com/v2/-wxu38OgTIonhR-yNbXPj4f_6eMP_fCZ",
+            ),
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
