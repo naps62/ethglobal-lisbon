@@ -2,6 +2,7 @@ import RingLoader from "react-spinners/RingLoader";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
+import RingLoader from "react-spinners/RingLoader";
 
 interface Props {
   close: () => void;
