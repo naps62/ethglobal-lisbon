@@ -2,6 +2,7 @@ use ethers::types::Address;
 use std::str::FromStr;
 use ethers::types::serde_helpers::StringifiedNumeric;
 use ethers::types::U256;     
+use ethers::utils::hex::FromHex;
 use std::collections::HashMap;
 
 use crate::context::{Context, Network, Wallet};
@@ -56,27 +57,41 @@ pub async fn simulate_tx(
 ) -> Result<()> {
     let mut _ctx = ctx.lock().await;
 
+    
     let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
 
     // parse params
 
     let from = if impersonate == None {
-        Address::from_str(params.get("from").unwrap()).unwrap()
+        params.get("from").unwrap().to_string()
     } else {
-        impersonate.unwrap()
+        impersonate.unwrap().to_string()
     };
 
-    let to = Address::from_str(params.get("to").unwrap()).unwrap();
+    let to = params.get("to").unwrap().to_string();
     let value = params
         .get("value")
         .cloned()
         .map(|v| U256::try_from(StringifiedNumeric::String(v)).unwrap())
         .unwrap_or_else(U256::default);
-    let data = params.get("data");
+    let data = params.get("data").unwrap();
+    let vec_data = hex_to_bytes(data);//Vec::from_hex(data).unwrap();
 
-    //simulate(from, to, value, data);
-    simulate();
+    simulate(from, to, value, vec_data);
+    //simulate();
     Ok(())
+}
+
+fn hex_to_bytes(s: &str) -> Option<Vec<u8>> {
+    if s.len() % 2 == 0 {
+        (0..s.len())
+            .step_by(2)
+            .map(|i| s.get(i..i + 2)
+                      .and_then(|sub| u8::from_str_radix(sub, 16).ok()))
+            .collect()
+    } else {
+        None
+    }
 }
 
 #[tauri::command]
