@@ -9,6 +9,7 @@ interface Props {
 }
 export default function Modal({ close, pendingTx, impersonate }: Props) {
   const [cachePending, setCachePending] = useState(null);
+  const [result, setResult] = useState<any>("");
 
   const maybeImpersonate = impersonate.length == 0 ? null : impersonate;
   useEffect(() => {
@@ -19,7 +20,7 @@ export default function Modal({ close, pendingTx, impersonate }: Props) {
     invoke("simulate_tx", {
       params: pendingTx,
       impersonate: maybeImpersonate,
-    }).then((result) => console.log(result));
+    }).then((result) => setResult(result));
   }, [pendingTx, impersonate]);
 
   return (
@@ -31,7 +32,7 @@ export default function Modal({ close, pendingTx, impersonate }: Props) {
         className="bg-white h-full border-2 p-10 relative"
         onClick={(e) => e.stopPropagation()}
       >
-        {JSON.stringify(pendingTx)}
+        {JSON.stringify(result)}
         <div className="flex justify-end absolute right-4 top-4">
           <RxCross2 className="text-3xl" onClick={close} />
         </div>

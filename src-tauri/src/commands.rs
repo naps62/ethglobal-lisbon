@@ -50,7 +50,7 @@ pub async fn simulate_tx(
 ) -> Result<String> {
     let mut _ctx = ctx.lock().await;
 
-    Ok("hello".to_string())
+    Ok("placeholder. simulation result will show up here".to_string())
 
     // todo!();
 }
