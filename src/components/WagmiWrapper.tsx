@@ -1,8 +1,13 @@
 import { type ProviderWithFallbackConfig } from "@wagmi/core";
 import { providers } from "ethers";
 import { useEffect, useState } from "react";
-import { Chain, WagmiConfig, configureChains } from "wagmi";
-import { createClient, Client } from "viem";
+import {
+  Chain,
+  Client,
+  WagmiConfig,
+  configureChains,
+  createClient,
+} from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 import { useInvoke } from "../hooks/tauri";
