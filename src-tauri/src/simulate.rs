@@ -122,7 +122,7 @@ impl EVM {
     }
 }
 
-pub fn simulate() {
+pub fn simulate(from: String, to: String, value: U256, data: Option<Vec<u8>>) {
     let address: String = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045".into();
     let address2: String = "0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB".into();
     let gas_limit = 18446744073709551615;
@@ -132,20 +132,17 @@ pub fn simulate() {
 
     let mut evm = EVM::new(None, Some(fork_url), None, gas_limit, true).expect("crash");
 
-    let info = evm.basic(&address2);
+    let info = evm.basic(&from);
 
     println!("{:?}", info);
 
     let result = evm
-        .call_raw(&address, &address2, Some(value), None)
-        .expect("crash");
-    let result = evm
-        .call_raw_committing(&address, &address2, Some(value), None)
+        .call_raw_committing(&from, &to, Some(value), data)
         .expect("crash");
 
     println!("{:?}", result);
 
-    let info = evm.basic(&address2);
+    let info = evm.basic(&from);
 
     println!("{:?}", info);
 }
