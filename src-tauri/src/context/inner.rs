@@ -4,11 +4,12 @@ use std::collections::HashMap;
 use std::net::SocketAddr;
 
 use ethers::providers::{Http, Provider};
+use ethers::types::H256;
 use ethers_core::k256::ecdsa::SigningKey;
 use log::warn;
 use serde::Serialize;
 use serde_json::json;
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, oneshot};
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
@@ -28,7 +29,7 @@ pub struct ContextInner {
     pub peers: HashMap<SocketAddr, Peer>,
 
     pub window_snd: Option<mpsc::UnboundedSender<Event>>,
-    pub window_rcv: Option<mpsc::UnbouncedReceiver<Receive>>,
+    pub rcv: HashMap<u64, oneshot::Sender<jsonrpc_core::Params>>,
 }
 
 impl ContextInner {
@@ -44,6 +45,7 @@ impl ContextInner {
             wallet: Default::default(),
             peers: Default::default(),
             window_snd: None,
+            rcv: Default::default(),
         }
     }
 

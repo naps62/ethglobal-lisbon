@@ -1,3 +1,5 @@
+use ethers::types::Address;
+
 use crate::context::{Context, Network, Wallet};
 
 type Ctx<'a> = tauri::State<'a, Context>;
@@ -27,4 +29,24 @@ pub async fn get_wallet(ctx: Ctx<'_>) -> Result<Wallet> {
     let ctx = ctx.lock().await;
 
     Ok(ctx.wallet.clone())
+}
+
+#[tauri::command]
+pub async fn simulate_tx(
+    ctx: Ctx<'_>,
+    _impersonate: Address,
+    _params: jsonrpc_core::Params,
+) -> Result<()> {
+    let mut _ctx = ctx.lock().await;
+
+    todo!();
+}
+
+#[tauri::command]
+pub async fn execute_tx(ctx: Ctx<'_>, id: u64, params: jsonrpc_core::Params) -> Result<()> {
+    let mut ctx = ctx.lock().await;
+
+    ctx.rcv.remove(&id).unwrap().send(params).unwrap();
+
+    Ok(())
 }

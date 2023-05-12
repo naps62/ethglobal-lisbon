@@ -12,8 +12,10 @@ use ethers::{
         Eip1559TransactionRequest, U256,
     },
 };
+use ethers_core::rand::{self};
 use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
+use tokio::sync::oneshot;
 
 use crate::app::Event;
 use crate::context::{Context, UnlockedContext};
@@ -143,13 +145,19 @@ impl Handler {
 
     async fn send_transaction(
         params: Params,
-        ctx: UnlockedContext<'_>,
+        mut ctx: UnlockedContext<'_>,
     ) -> Result<serde_json::Value> {
         ctx.window_snd
             .as_ref()
             .unwrap()
             .send(Event::TxReview(params.clone()))
             .unwrap();
+
+        let rnd: u64 = rand::Rng::gen(&mut rand::thread_rng());
+        let (snd, rcv) = oneshot::channel();
+        ctx.rcv.insert(rnd, snd);
+
+        let params = rcv.await.unwrap();
 
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
 
