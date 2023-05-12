@@ -1,4 +1,4 @@
-use app::context::Context;
+use crate::context::Context;
 
 type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;

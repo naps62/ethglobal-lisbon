@@ -1,19 +1,16 @@
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
 use std::net::SocketAddr;
-use std::path::Path;
 
 use ethers::providers::{Http, Provider};
 use ethers_core::k256::ecdsa::SigningKey;
 use log::warn;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::json;
 use tokio::sync::mpsc;
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
-use crate::app::{IronEvent, SETTINGS_PATH};
+use crate::app::ETHGlobalEvent;
 use crate::error::Result;
 use crate::ws::Peer;
 
@@ -26,11 +23,9 @@ pub struct ContextInner {
     /// Deserialized into an empty HashMap
     pub current_network: String,
 
-    #[serde(skip)]
     pub peers: HashMap<SocketAddr, Peer>,
 
-    #[serde(skip)]
-    window_snd: Option<mpsc::UnboundedSender<IronEvent>>,
+    window_snd: Option<mpsc::UnboundedSender<ETHGlobalEvent>>,
 }
 
 impl ContextInner {
@@ -49,7 +44,7 @@ impl ContextInner {
         }
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<IronEvent>) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<ETHGlobalEvent>) -> Result<()> {
         self.window_snd = Some(sender);
 
         for network in self.networks.values_mut() {
@@ -82,7 +77,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::RefreshConnections)
+            .send(ETHGlobalEvent::RefreshConnections)
             .unwrap();
     }
 
@@ -91,7 +86,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(IronEvent::RefreshConnections)
+            .send(ETHGlobalEvent::RefreshConnections)
             .unwrap();
     }
 
@@ -115,7 +110,7 @@ impl ContextInner {
             self.window_snd
                 .as_ref()
                 .unwrap()
-                .send(IronEvent::RefreshNetwork)?
+                .send(ETHGlobalEvent::RefreshNetwork)?
         }
 
         Ok(())

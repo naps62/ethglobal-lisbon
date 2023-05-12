@@ -2,27 +2,24 @@ use std::path::PathBuf;
 
 use once_cell::sync::OnceCell;
 use serde::Serialize;
-use tauri::{
-    AppHandle, Builder, CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu,
-    SystemTrayMenuItem,
-};
+use tauri::{AppHandle, Builder, Manager};
 use tokio::sync::mpsc;
 
 use crate::{commands, context::Context};
 
 pub struct ETHGlobalApp {
-    pub sender: mpsc::UnboundedSender<IronEvent>,
+    pub sender: mpsc::UnboundedSender<ETHGlobalEvent>,
     app: Option<tauri::App>,
 }
 
 #[derive(Debug, Serialize)]
-pub enum IronEvent {
+pub enum ETHGlobalEvent {
     RefreshNetwork,
     RefreshTransactions,
     RefreshConnections,
 }
 
-impl IronEvent {
+impl ETHGlobalEvent {
     fn label(&self) -> &str {
         match self {
             Self::RefreshNetwork => "refresh-network",
@@ -110,7 +107,7 @@ fn show_main_window(app: &AppHandle) {
     }
 }
 
-async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<IronEvent>) {
+async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<ETHGlobalEvent>) {
     // TODO: need to not finish if there's no window
     while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
         window.emit(msg.label(), &msg).unwrap();

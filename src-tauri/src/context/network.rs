@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 use url::Url;
 
-use super::block_listener::BlockListener;
-use crate::{app::IronEvent, db::DB};
+// use super::block_listener::BlockListener;
+use crate::app::ETHGlobalEvent;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -16,9 +16,8 @@ pub struct Network {
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
-
-    #[serde(skip)]
-    listener: Option<Arc<Mutex<BlockListener>>>,
+    // #[serde(skip)]
+    // listener: Option<Arc<Mutex<BlockListener>>>,
 }
 
 impl Network {
@@ -31,7 +30,7 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
-            listener: None,
+            // listener: None,
         }
     }
 
@@ -44,7 +43,7 @@ impl Network {
             ws_url: None,
             currency: String::from("ETH"),
             decimals: 18,
-            listener: None,
+            // listener: None,
         }
     }
 
@@ -57,7 +56,7 @@ impl Network {
             ws_url: Some(String::from("ws://localhost:8545")),
             currency: String::from("ETH"),
             decimals: 18,
-            listener: None,
+            // listener: None,
         }
     }
 
@@ -67,21 +66,20 @@ impl Network {
 
     pub fn reset_listener(
         &mut self,
-        db: &DB,
-        window_snd: mpsc::UnboundedSender<IronEvent>,
+        window_snd: mpsc::UnboundedSender<ETHGlobalEvent>,
     ) -> crate::error::Result<()> {
-        if let Some(listener) = self.listener.as_ref() {
-            listener.lock().unwrap().stop();
-            self.listener = None;
-        }
+        // if let Some(listener) = self.listener.as_ref() {
+        //     listener.lock().unwrap().stop();
+        //     self.listener = None;
+        // }
 
         if self.dev {
             let http_url = Url::parse(&self.http_url)?;
             let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
-            let mut listener =
-                BlockListener::new(self.chain_id, http_url, ws_url, db.clone(), window_snd);
-            listener.run()?;
-            self.listener = Some(Arc::new(Mutex::new(listener)));
+            // let mut listener =
+            //     BlockListener::new(self.chain_id, http_url, ws_url, db.clone(), window_snd);
+            // listener.run()?;
+            // self.listener = Some(Arc::new(Mutex::new(listener)));
         }
 
         Ok(())
