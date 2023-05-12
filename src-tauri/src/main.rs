@@ -14,6 +14,7 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+use context::Context;
 use error::Result;
 
 #[tokio::main]
@@ -23,13 +24,11 @@ async fn main() -> Result<()> {
     fix_path_env::fix()?;
 
     let mut app = app::ETHGlobalApp::build();
+    let mut ctx = Context::new().await?;
+    ctx.init(app.sender.clone()).await?;
 
-    // let mut ctx = Context::new().await?;
-
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+    app.manage(ctx);
+    app.run();
 
     Ok(())
 }
