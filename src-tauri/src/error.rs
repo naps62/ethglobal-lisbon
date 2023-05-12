@@ -1,4 +1,4 @@
-use crate::app::ETHGlobalEvent;
+use crate::app::Event;
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -7,7 +7,7 @@ pub enum Error {
     Eyre(#[from] color_eyre::eyre::Error),
     Websocket(#[from] tungstenite::Error),
     WalletError(#[from] ethers::signers::WalletError),
-    WindowSend(#[from] tokio::sync::mpsc::error::SendError<ETHGlobalEvent>),
+    WindowSend(#[from] tokio::sync::mpsc::error::SendError<Event>),
     Url(#[from] url::ParseError),
 }
 

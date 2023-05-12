@@ -15,6 +15,7 @@ use ethers::{
 use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 
+use crate::app::Event;
 use crate::context::{Context, UnlockedContext};
 
 pub struct Handler {
@@ -144,6 +145,12 @@ impl Handler {
         params: Params,
         ctx: UnlockedContext<'_>,
     ) -> Result<serde_json::Value> {
+        ctx.window_snd
+            .as_ref()
+            .unwrap()
+            .send(Event::TxReview(params.clone()))
+            .unwrap();
+
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
 
         // parse params

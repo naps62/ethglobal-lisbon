@@ -7,7 +7,7 @@ use tokio::sync::mpsc;
 use url::Url;
 
 // use super::block_listener::BlockListener;
-use crate::app::ETHGlobalEvent;
+use crate::app::Event;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -67,7 +67,7 @@ impl Network {
 
     pub fn reset_listener(
         &mut self,
-        window_snd: mpsc::UnboundedSender<ETHGlobalEvent>,
+        window_snd: mpsc::UnboundedSender<Event>,
     ) -> crate::error::Result<()> {
         // if let Some(listener) = self.listener.as_ref() {
         //     listener.lock().unwrap().stop();

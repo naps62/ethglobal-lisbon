@@ -8,18 +8,19 @@ use tokio::sync::mpsc;
 use crate::{commands, context::Context};
 
 pub struct ETHGlobalApp {
-    pub sender: mpsc::UnboundedSender<ETHGlobalEvent>,
+    pub sender: mpsc::UnboundedSender<Event>,
     app: Option<tauri::App>,
 }
 
 #[derive(Debug, Serialize)]
-pub enum ETHGlobalEvent {
+pub enum Event {
     RefreshNetwork,
     RefreshTransactions,
     RefreshConnections,
+    TxReview(jsonrpc_core::Params),
 }
 
-impl ETHGlobalEvent {
+impl Event {
     fn label(&self) -> &str {
         match self {
             Self::RefreshNetwork => "refresh-network",
@@ -101,7 +102,7 @@ impl ETHGlobalApp {
     }
 }
 
-async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<ETHGlobalEvent>) {
+async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<Event>) {
     // TODO: need to not finish if there's no window
     while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {
         window.emit(msg.label(), &msg).unwrap();

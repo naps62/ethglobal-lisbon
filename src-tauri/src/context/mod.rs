@@ -11,7 +11,7 @@ use tokio::sync::mpsc;
 pub use self::inner::ContextInner;
 pub use self::network::Network;
 pub use self::wallet::Wallet;
-use crate::app::ETHGlobalEvent;
+use crate::app::Event;
 pub use crate::error::Result;
 
 #[derive(Clone)]
@@ -28,7 +28,7 @@ impl Context {
         Ok(Self(Arc::new(Mutex::new(inner))))
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<ETHGlobalEvent>) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<Event>) -> Result<()> {
         self.lock().await.init(sender).await
     }
 
