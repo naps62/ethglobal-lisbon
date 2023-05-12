@@ -3,7 +3,6 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 
-
 interface Props {
   close: () => void;
   pendingTx: {};
