@@ -12,7 +12,7 @@ use tokio::sync::mpsc;
 
 pub use super::network::Network;
 pub use super::wallet::Wallet;
-use crate::app::ETHGlobalEvent;
+use crate::app::Event;
 use crate::error::Result;
 use crate::ws::Peer;
 
@@ -27,7 +27,8 @@ pub struct ContextInner {
 
     pub peers: HashMap<SocketAddr, Peer>,
 
-    window_snd: Option<mpsc::UnboundedSender<ETHGlobalEvent>>,
+    pub window_snd: Option<mpsc::UnboundedSender<Event>>,
+    pub window_rcv: Option<mpsc::UnbouncedReceiver<Receive>>,
 }
 
 impl ContextInner {
@@ -46,7 +47,7 @@ impl ContextInner {
         }
     }
 
-    pub async fn init(&mut self, sender: mpsc::UnboundedSender<ETHGlobalEvent>) -> Result<()> {
+    pub async fn init(&mut self, sender: mpsc::UnboundedSender<Event>) -> Result<()> {
         self.window_snd = Some(sender);
 
         for network in self.networks.values_mut() {
@@ -79,7 +80,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(ETHGlobalEvent::RefreshConnections)
+            .send(Event::RefreshConnections)
             .unwrap();
     }
 
@@ -88,7 +89,7 @@ impl ContextInner {
         self.window_snd
             .as_ref()
             .unwrap()
-            .send(ETHGlobalEvent::RefreshConnections)
+            .send(Event::RefreshConnections)
             .unwrap();
     }
 
@@ -112,7 +113,7 @@ impl ContextInner {
             self.window_snd
                 .as_ref()
                 .unwrap()
-                .send(ETHGlobalEvent::RefreshNetwork)?
+                .send(Event::RefreshNetwork)?
         }
 
         Ok(())
