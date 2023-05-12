@@ -57,29 +57,25 @@ impl EVM {
         Ok(EVM(executor))
     }
 
-    fn basic(&self, address: &str) -> Result<Option<AccountInfo>, ()> {
+    fn basic(&self, address: Address) -> Result<Option<AccountInfo>, ()> {
         let db = self.db();
 
-        let address_converted: Address = address.parse().expect("crash");
-        let acc = db.basic(address_converted.into()).expect("crash");
+        let acc = db.basic(address.into()).expect("crash");
         Ok(acc.map(Into::into))
     }
 
     fn call_raw_committing(
         &mut self,
-        caller: &str,
-        to: &str,
+        caller: Address,
+        to: Address,
         value: Option<U256>,
         data: Option<Vec<u8>>,
     ) -> Result<(), ()> {
-        let caller_address: Address = caller.parse().expect("crash");
-        let to_address: Address = to.parse().expect("crash");
-
         let res = self
             .0
             .call_raw_committing(
-                caller_address,
-                to_address,
+                caller,
+                to,
                 data.unwrap_or_default().into(),
                 value.unwrap_or_default().into(),
             )
@@ -90,39 +86,11 @@ impl EVM {
         }
 
         // TODO: Return the traces back to the user.
-        dbg!(&res.traces);
-        Ok(())
-    }
-
-    fn call_raw(
-        &self,
-        caller: &str,
-        to: &str,
-        value: Option<U256>,
-        data: Option<Vec<u8>>,
-    ) -> Result<(), ()> {
-        let caller_address: Address = caller.parse().expect("crash");
-        let to_address: Address = to.parse().expect("crash");
-        let res = self
-            .0
-            .call_raw(
-                caller_address,
-                to_address,
-                data.unwrap_or_default().into(),
-                value.unwrap_or_default().into(),
-            )
-            .expect("crash");
-
-        if res.reverted {
-            return Err(() /*res.exit_reason*/);
-        }
-
-        dbg!(&res.traces);
         Ok(())
     }
 }
 
-pub fn simulate(from: String, to: String, value: U256, data: Option<Vec<u8>>) {
+pub fn simulate(from: Address, to: Address, value: U256, data: Option<Vec<u8>>) {
     let address: String = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045".into();
     let address2: String = "0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB".into();
     let gas_limit = 18446744073709551615;
@@ -132,17 +100,17 @@ pub fn simulate(from: String, to: String, value: U256, data: Option<Vec<u8>>) {
 
     let mut evm = EVM::new(None, Some(fork_url), None, gas_limit, true).expect("crash");
 
-    let info = evm.basic(&from);
+    let info = evm.basic(from);
 
     println!("{:?}", info);
 
     let result = evm
-        .call_raw_committing(&from, &to, Some(value), data)
+        .call_raw_committing(from, to, Some(value), data)
         .expect("crash");
 
     println!("{:?}", result);
 
-    let info = evm.basic(&from);
+    let info = evm.basic(from);
 
     println!("{:?}", info);
 }
