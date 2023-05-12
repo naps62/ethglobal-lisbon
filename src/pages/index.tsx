@@ -41,6 +41,7 @@ export default function Home() {
 
   return (
     <main>
+      <input type="text" onChange={onImpersonateChange} />
       {modalOpen && (
         <Modal
           pendingTx={pendingTx}
