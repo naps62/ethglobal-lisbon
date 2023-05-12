@@ -26,6 +26,7 @@ impl Event {
             Self::RefreshNetwork => "refresh-network",
             Self::RefreshTransactions => "refresh-transactions",
             Self::RefreshConnections => "refresh-connections",
+            Self::TxReview(_) => "tx-review",
         }
     }
 }
@@ -42,6 +43,8 @@ impl ETHGlobalApp {
                 commands::get_wallet,
                 commands::get_networks,
                 commands::get_current_network,
+                commands::execute_tx,
+                commands::simulate_tx
             ])
             .setup(|app| {
                 let handle = app.handle();
