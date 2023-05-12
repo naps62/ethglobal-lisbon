@@ -122,7 +122,7 @@ impl EVM {
     }
 }
 
-fn simulate() {
+pub fn simulate() {
     let address: String = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045".into();
     let address2: String = "0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB".into();
     let gas_limit = 18446744073709551615;
@@ -136,7 +136,9 @@ fn simulate() {
 
     println!("{:?}", info);
 
-    let result = evm.call_raw(&address, &address2, Some(value), None).expect("crash");
+    let result = evm
+        .call_raw(&address, &address2, Some(value), None)
+        .expect("crash");
     let result = evm
         .call_raw_committing(&address, &address2, Some(value), None)
         .expect("crash");
