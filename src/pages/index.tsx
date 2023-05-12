@@ -1,16 +1,18 @@
-import Image from 'next/image';
-import { Inter } from 'next/font/google';
-import Header from '@/components/Header';
-import Account from '@/components/Account';
-import Details from '@/components/Details';
-import Balance from '@/components/Balance';
-import Modal from '@/components/Modal';
-import { useState } from 'react';
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import Header from "@/components/Header";
+import { Accounts } from "@/components";
+import Details from "@/components/Details";
+import Balance from "@/components/Balance";
+import Modal from "@/components/Modal";
+import { useState } from "react";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
+const mockAccounts = ["0x00000000000", "0x11111111111"];
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [accounts, setAccounts] = useState(mockAccounts);
   return (
     <main>
       {modalOpen && <Modal close={() => setModalOpen(false)} />}
@@ -23,7 +25,7 @@ export default function Home() {
           Modal
         </button>
       </div>
-      <Account />
+      <Accounts accounts={accounts} setAccounts={setAccounts} />
       <Balance />
       <Details />
     </main>
