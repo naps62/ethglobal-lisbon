@@ -80,10 +80,10 @@ impl Handler {
                     .add_method_with_meta($name, |params: Params, ctx: Context| async move {
                         let provider = ctx.lock().await.get_provider();
                         let res: jsonrpc_core::Result<serde_json::Value> = provider
-                            .request::<_, serde_json::Value>($name, params)
+                            .request::<_, serde_json::Value>($name, params.clone())
                             .await
                             .map_err(ethers_to_jsonrpc_error);
-                        dbg!(res)
+                        res
                     });
             };
         }
