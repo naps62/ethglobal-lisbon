@@ -4,6 +4,7 @@ use ethers::abi::AbiEncode;
 use ethers::providers::ProviderError;
 use ethers::signers::Signer;
 use ethers::types::transaction::eip712;
+use ethers::utils::to_checksum;
 use ethers::{
     prelude::SignerMiddleware,
     providers::Middleware,
@@ -92,6 +93,7 @@ impl Handler {
         provider_handler!("eth_call");
         provider_handler!("eth_blockNumber");
         provider_handler!("net_version");
+        provider_handler!("eth_getCode");
 
         // handle internally
         self_handler!("eth_accounts", Self::accounts);
@@ -111,7 +113,9 @@ impl Handler {
 
     async fn accounts(_: Params, ctx: Context) -> Result<serde_json::Value> {
         let ctx = ctx.lock().await;
-        Ok(json!([ctx.wallet.checksummed_address()]))
+        let address = ctx.current_address();
+
+        Ok(json!([to_checksum(&address, None)]))
     }
 
     async fn chain_id(_: Params, ctx: Context) -> Result<serde_json::Value> {
@@ -144,7 +148,7 @@ impl Handler {
     }
 
     async fn send_transaction(params: Params, ctx: Context) -> Result<serde_json::Value> {
-        let rcv = {
+        let (rcv, address) = {
             let mut ctx = ctx.lock().await;
             ctx.window_snd
                 .as_ref()
@@ -155,15 +159,16 @@ impl Handler {
             let rnd: u64 = rand::Rng::gen(&mut rand::thread_rng());
             let (snd, rcv) = oneshot::channel();
             ctx.rcv.insert(rnd, snd);
-            rcv
+            (rcv, ctx.current_address())
         };
 
         let params = rcv.await.unwrap();
 
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
 
+        dbg!(address);
         // parse params
-        let from = Address::from_str(params.get("from").unwrap()).unwrap();
+        let from = address; //Address::from_str(params.get("from").unwrap()).unwrap();
         let to = Address::from_str(params.get("to").unwrap()).unwrap();
         let value = params
             .get("value")
