@@ -8,12 +8,6 @@ mod error;
 mod rpc;
 mod ws;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 use context::Context;
 use error::Result;
 
@@ -26,6 +20,12 @@ async fn main() -> Result<()> {
     let mut app = app::ETHGlobalApp::build();
     let mut ctx = Context::new().await?;
     ctx.init(app.sender.clone()).await?;
+
+    // run websockets server loop
+    {
+        let ctx = ctx.clone();
+        tauri::async_runtime::spawn(async move { ws::ws_server_loop(ctx).await });
+    }
 
     app.manage(ctx);
     app.run();

@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
 use ethers::utils::to_checksum;

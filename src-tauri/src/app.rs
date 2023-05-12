@@ -101,16 +101,6 @@ impl ETHGlobalApp {
     }
 }
 
-fn show_main_window(app: &AppHandle) {
-    if let Some(w) = app.get_window("main") {
-        w.show().unwrap()
-    } else {
-        tauri::WindowBuilder::new(app, "main", tauri::WindowUrl::App("index.html".into()))
-            .build()
-            .unwrap();
-    }
-}
-
 async fn event_listener(handle: AppHandle, mut rcv: mpsc::UnboundedReceiver<ETHGlobalEvent>) {
     // TODO: need to not finish if there's no window
     while let (Some(msg), Some(window)) = (rcv.recv().await, handle.get_window("main")) {

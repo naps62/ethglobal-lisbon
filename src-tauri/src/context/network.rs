@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::sync::{Arc, Mutex};
 
 use serde::{Deserialize, Serialize};
@@ -16,7 +18,6 @@ pub struct Network {
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
-    // #[serde(skip)]
     // listener: Option<Arc<Mutex<BlockListener>>>,
 }
 
