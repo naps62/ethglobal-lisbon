@@ -20,11 +20,8 @@ export default function Balance() {
 
   console.log(exchangeRate);
   useEffect(() => {
-    console.log("in effect");
     (async function () {
-      console.log("in internal");
       const ethPrice = await getETHPrice();
-      console.log("ethPrice", ethPrice);
       setExchangeRate(ethPrice);
     })();
     // (async function () {
