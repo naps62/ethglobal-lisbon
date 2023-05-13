@@ -15,6 +15,7 @@ export default function Balance() {
       setBalance(balance);
     });
   });
+  console.log(balance);
 
   return (
     <div className="flex flex-col pt-8 items-center">

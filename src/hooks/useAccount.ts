@@ -10,13 +10,14 @@ export function useAccount() {
     const unlisten = listen("refresh-account", () => {
       console.log("here");
       mutate();
+      console.log("here2");
+      console.log(address);
     });
 
     return () => {
       unlisten.then((cb) => cb());
     };
   }, [mutate, address]);
-  console.log(address);
 
   return address;
 }

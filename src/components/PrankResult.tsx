@@ -58,7 +58,12 @@ function ERC20Transfers({ transfers }: { transfers: any[] }) {
       <div className="border-b-2">To</div>
       <div className="border-b-2">Amount</div>
       {transfers.map((transfer) => {
-        return <ERC20Transfer key={transfer.token} transfer={transfer} />;
+        return (
+          <ERC20Transfer
+            key={transfer.token + transfer.to}
+            transfer={transfer}
+          />
+        );
       })}
     </div>
   );
