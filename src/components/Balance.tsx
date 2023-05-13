@@ -1,8 +1,8 @@
-import { useAccount, useProvider } from "@/hooks";
-import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils.js";
-import { useEffect, useState } from "react";
-import { getETHPrice, getERC20Price } from "@/utils/getEthPrice";
+import { useAccount, useProvider } from '@/hooks';
+import { BigNumber } from 'ethers';
+import { formatUnits } from 'ethers/lib/utils.js';
+import { useEffect, useState } from 'react';
+import { getETHPrice, getERC20Price } from '@/utils/getPrice';
 
 export default function Balance() {
   const account = useAccount();

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 
 const provider = new ethers.providers.JsonRpcProvider(
-  'https://mainnet.infura.io/v3/b5bbad90e76c442da70517070c81414e'
+  process.env.NEXT_PUBLIC_INFURA_RPC
 );
 
 export async function getETHPrice() {
