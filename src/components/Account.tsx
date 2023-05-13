@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Dropdown, Button, Input, useInput } from "@nextui-org/react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useAccountStore, useSelectedAccountStore } from "@/hooks";
+import { queryHandle } from "@/lens";
 
 const ethereumAddressValidator = (value: string) =>
   /^0x[0-9a-fA-F]{40}$/.test(value);
@@ -24,7 +25,13 @@ export const Accounts = () => {
 
   const onClickHandler = () => {
     if (toggleInput) {
-      if (ethereumAddressValidator(value)) {
+      if (value.endsWith(".lens")) {
+        queryHandle(value).then((owner) => {
+          setAccounts([...accounts, owner]);
+          setSelected(owner);
+          reset();
+        });
+      } else if (ethereumAddressValidator(value)) {
         setAccounts([...accounts, value]);
         setSelected(value);
         reset();

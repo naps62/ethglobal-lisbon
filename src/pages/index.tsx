@@ -8,6 +8,7 @@ import Modal from "@/components/Modal";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useAccountStore } from "@/hooks/use-store";
+import { queryHandle } from "@/lens";
 
 const inter = Inter({ subsets: ["latin"] });
 

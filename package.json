@@ -11,6 +11,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.14",
     "@nextui-org/react": "^1.0.0-beta.12",
     "@tauri-apps/api": "^1.2.0",
     "@tauri-apps/cli": "^1.2.2",
@@ -19,9 +20,11 @@
     "@types/react-dom": "18.2.4",
     "@wagmi/core": "^0.10.9",
     "autoprefixer": "10.4.14",
+    "cross-fetch": "^3.1.5",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.2",
     "ethers": "^5.7.2",
+    "graphql": "^16.6.0",
     "next": "13.4.2",
     "postcss": "8.4.23",
     "react": "18.2.0",
