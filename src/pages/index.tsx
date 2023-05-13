@@ -14,11 +14,13 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [pendingTx, setPendingTx] = useState({});
+  const [txid, setTxid] = useState(0);
   const [impersonate, setImpersonate] = useState("");
 
   useEffect(() => {
     const unlisten = listen("tx-review", ({ payload }) => {
-      setPendingTx(payload["TxReview"][0]);
+      setTxid(payload["TxReview"][0]);
+      setPendingTx(payload["TxReview"][1]);
       setModalOpen(true);
     });
 
@@ -42,6 +44,7 @@ export default function Home() {
       {modalOpen && (
         <Modal
           pendingTx={pendingTx}
+          txid={txid}
           impersonate={impersonate}
           close={() => setModalOpen(false)}
         />

@@ -135,8 +135,6 @@ pub fn simulate(
     let info = evm.basic(from).unwrap();
     let balance_after: U256 = info.unwrap().balance.into();
 
-    dbg!(&result.logs);
-
     let erc20topic =
         H256::from_str("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
             .unwrap();
@@ -149,7 +147,7 @@ pub fn simulate(
             token: l.address,
             from: l.topics[1].into(),
             to: l.topics[2].into(),
-            amount: U256::from_str(&dbg!(format!("{}", l.data))).unwrap(),
+            amount: U256::from_str(&format!("{}", l.data)).unwrap(),
         })
         .collect();
 

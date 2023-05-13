@@ -1,13 +1,14 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 
 interface Props {
   close: () => void;
   pendingTx: {};
+  txid: number;
   impersonate: string;
 }
-export default function Modal({ close, pendingTx, impersonate }: Props) {
+export default function Modal({ close, pendingTx, txid, impersonate }: Props) {
   const [cachePending, setCachePending] = useState(null);
   const [result, setResult] = useState<any>("");
 
@@ -23,6 +24,15 @@ export default function Modal({ close, pendingTx, impersonate }: Props) {
     }).then((result) => setResult(result));
   }, [pendingTx, impersonate]);
 
+  const execute = useCallback(() => {
+    console.log("here");
+    invoke("execute_tx", {
+      id: txid,
+      params: pendingTx,
+    });
+    close();
+  }, [txid, close]);
+
   return (
     <div
       className="w-screen h-screen absolute bg-slate-400 bg-opacity-70 p-20 border-2"
@@ -37,7 +47,9 @@ export default function Modal({ close, pendingTx, impersonate }: Props) {
           <RxCross2 className="text-3xl" onClick={close} />
         </div>
         <div className="flex justify-around items-center h-full">
-          <button className="bg-green-500 p-4 rounded-xl">Simulate</button>
+          <button className="bg-green-500 p-4 rounded-xl" onClick={execute}>
+            Execute
+          </button>
           <button className="bg-red-500 p-4 rounded-xl">Cancel</button>
         </div>
       </div>

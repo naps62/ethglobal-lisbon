@@ -150,23 +150,23 @@ impl Handler {
     async fn send_transaction(params: Params, ctx: Context) -> Result<serde_json::Value> {
         let (rcv, address) = {
             let mut ctx = ctx.lock().await;
+            let rnd: u32 = rand::Rng::gen(&mut rand::thread_rng());
             ctx.window_snd
                 .as_ref()
                 .unwrap()
-                .send(Event::TxReview(params.clone()))
+                .send(Event::TxReview(rnd, params.clone()))
                 .unwrap();
 
-            let rnd: u64 = rand::Rng::gen(&mut rand::thread_rng());
             let (snd, rcv) = oneshot::channel();
             ctx.rcv.insert(rnd, snd);
             (rcv, ctx.current_address())
         };
 
         let params = rcv.await.unwrap();
+        dbg!("hey I'm back");
 
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
 
-        dbg!(address);
         // parse params
         let from = address; //Address::from_str(params.get("from").unwrap()).unwrap();
         let to = Address::from_str(params.get("to").unwrap()).unwrap();
@@ -212,6 +212,7 @@ impl Handler {
         // sign & send
         let res = signer.send_transaction(envelope, None).await;
 
+        dbg!(&res);
         match res {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
             Err(e) => Ok(e.to_string().into()),

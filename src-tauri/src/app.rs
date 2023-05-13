@@ -17,7 +17,7 @@ pub enum Event {
     RefreshNetwork,
     RefreshTransactions,
     RefreshConnections,
-    TxReview(jsonrpc_core::Params),
+    TxReview(u32, jsonrpc_core::Params),
 }
 
 impl Event {
@@ -26,7 +26,7 @@ impl Event {
             Self::RefreshNetwork => "refresh-network",
             Self::RefreshTransactions => "refresh-transactions",
             Self::RefreshConnections => "refresh-connections",
-            Self::TxReview(_) => "tx-review",
+            Self::TxReview(_, _) => "tx-review",
         }
     }
 }

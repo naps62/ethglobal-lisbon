@@ -30,7 +30,7 @@ pub struct ContextInner {
     pub peers: HashMap<SocketAddr, Peer>,
 
     pub window_snd: Option<mpsc::UnboundedSender<Event>>,
-    pub rcv: HashMap<u64, oneshot::Sender<jsonrpc_core::Params>>,
+    pub rcv: HashMap<u32, oneshot::Sender<jsonrpc_core::Params>>,
 }
 
 impl ContextInner {

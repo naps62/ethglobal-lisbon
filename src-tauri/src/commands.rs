@@ -61,7 +61,7 @@ pub async fn do_simulate(
     ctx: UnlockedContext<'_>,
     params: jsonrpc_core::Params,
 ) -> Result<CallResult> {
-    let params = params.parse::<HashMap<String, String>>().unwrap();
+    let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
     // Ok("placeholder. simulation result will show up here".to_string())
 
     // parse params
@@ -86,7 +86,7 @@ pub async fn do_simulate(
 }
 
 #[tauri::command]
-pub async fn execute_tx(ctx: Ctx<'_>, id: u64, params: jsonrpc_core::Params) -> Result<()> {
+pub async fn execute_tx(ctx: Ctx<'_>, id: u32, params: jsonrpc_core::Params) -> Result<()> {
     let mut ctx = ctx.lock().await;
 
     ctx.rcv.remove(&id).unwrap().send(params).unwrap();
