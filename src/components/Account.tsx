@@ -18,6 +18,7 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
   const onClickHandler = () => {
     if (toggleInput) {
       setAccounts([...accounts, value]);
+      setSelected(new Set([value]));
       setToggleInput(!toggleInput);
     } else {
       setToggleInput(!toggleInput);
@@ -41,7 +42,7 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
       ) : (
         <div className="flex justify-center items-center py-4">
           <Dropdown>
-            <Dropdown.Button flat color="secondary" css={{ tt: "capitalize" }}>
+            <Dropdown.Button flat color="primary" css={{ tt: "capitalize" }}>
               {selectedValue}
             </Dropdown.Button>
             <Dropdown.Menu
