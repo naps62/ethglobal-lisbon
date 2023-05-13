@@ -1,7 +1,6 @@
 use ethers::types::serde_helpers::StringifiedNumeric;
 use ethers::types::Address;
 use ethers::types::U256;
-use ethers::utils::hex::FromHex;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -52,10 +51,9 @@ pub async fn impersonate(ctx: Ctx<'_>, address: String) -> Result<String> {
 #[tauri::command]
 pub async fn simulate_tx(
     ctx: Ctx<'_>,
-    impersonate: Option<Address>,
     params: jsonrpc_core::Params,
 ) -> Result<()> {
-    let mut ctx = ctx.lock().await;
+    let ctx = ctx.lock().await;
 
     let params = params.parse::<HashMap<String, String>>().unwrap();
     // Ok("placeholder. simulation result will show up here".to_string())
@@ -79,20 +77,6 @@ pub async fn simulate_tx(
     Ok(())
 }
 
-fn hex_to_bytes(s: &str) -> Option<Vec<u8>> {
-    if s.len() % 2 == 0 {
-        (0..s.len())
-            .step_by(2)
-            .map(|i| {
-                s.get(i..i + 2)
-                    .and_then(|sub| u8::from_str_radix(sub, 16).ok())
-            })
-            .collect()
-    } else {
-        None
-    }
-}
-
 #[tauri::command]
 pub async fn execute_tx(ctx: Ctx<'_>, id: u64, params: jsonrpc_core::Params) -> Result<()> {
     let mut ctx = ctx.lock().await;
@@ -100,6 +84,40 @@ pub async fn execute_tx(ctx: Ctx<'_>, id: u64, params: jsonrpc_core::Params) -> 
     ctx.rcv.remove(&id).unwrap().send(params).unwrap();
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::context::Context;
+    use crate::context::ContextInner;
+    use ethers::types::Address;
+    use crate::commands::simulate_tx;
+
+    #[test]
+    fn simulate_detris() {
+        let params =  serde_json::json!({
+            "from": "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503",
+            "value": "0x0",
+            "data": "0x1249c58b",
+            "gas": "0x1e05f",
+            "to": "0xf0f8628d496782d6a9c724f047d14b4fc2569ea1",
+        });
+
+        let string_params = serde_json::to_string(&params).unwrap();
+
+        let ctx = ContextInner::new();
+
+        ctx.impersonate("0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326".into());
+
+       let params = jsonrpc_core::Params::from(string_params); 
+
+       simulate_tx(ctx, params);
+
+    }
+
+    fn simulate_uniswap() {
+        assert_eq!(2 + 2, 4);
+    }
 }
 
 // [src/commands.rs:65] &params = {
