@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { SearchAccounts } from "./get-accounts/SearchAccounts";
+import { Menu } from "./Menu";
+import { useSelectedAccountStore } from "@/hooks";
 
 export default function Details() {
   const [active, setActive] = useState("assets");
@@ -14,27 +17,14 @@ export default function Details() {
       balance: 0.0,
     },
   ]);
-  const [transactions, setTransactions] = useState([
-    {
-      direction: "send",
-      amount: 0.0,
-      date: new Date(),
-      address: "0x7546e9EA6f...22A5C",
-    },
-    {
-      direction: "receive",
-      amount: 0.0,
-      date: new Date(),
-      address: "0x7546e9EA6f...22A5C",
-    },
-  ]);
+  const { selected } = useSelectedAccountStore();
 
   return (
     <div className="">
       <Menu active={active} setActive={setActive} />
       <div className="flex justify-center">
         {active === "assets" && <Assets assets={assets} />}
-        {active === "activity" && <Activity transactions={transactions} />}
+        {active === "activity" && <SearchAccounts address={selected} />}
       </div>
     </div>
   );
@@ -62,56 +52,6 @@ function Asset({ name, logo, balance }: Asset) {
         <img src={logo} alt={name} className="w-10 h-10" />
         <div>{name}</div>
         <div>{balance}</div>
-      </div>
-    </div>
-  );
-}
-
-interface Transaction {
-  direction: string;
-  amount: number;
-  date: Date;
-  address: string;
-}
-
-function Activity({ transactions }: { transactions: Transaction[] }) {
-  return (
-    <div>
-      {transactions.map((transaction) => (
-        <Transaction {...transaction} />
-      ))}
-    </div>
-  );
-}
-
-function Transaction({ direction, amount, date, address }: Transaction) {
-  return <div>hello</div>;
-}
-
-function Menu({
-  active,
-  setActive,
-}: {
-  active: string;
-  setActive: (s: string) => void;
-}) {
-  return (
-    <div className="flex justify-around border-b-2">
-      <div
-        className={`${
-          active === "assets" && "text-blue-500 border-b-2 border-blue-500"
-        }`}
-        onClick={() => setActive("assets")}
-      >
-        Assets
-      </div>
-      <div
-        className={`${
-          active === "activity" && "text-blue-500 border-b-2 border-blue-500"
-        }`}
-        onClick={() => setActive("activity")}
-      >
-        Activity
       </div>
     </div>
   );

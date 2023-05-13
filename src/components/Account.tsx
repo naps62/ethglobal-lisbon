@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Dropdown, Button, Input, useInput } from "@nextui-org/react";
 import { invoke } from "@tauri-apps/api/tauri";
+import { useAccountStore, useSelectedAccountStore } from "@/hooks";
 
-interface AccountsType {
-  accounts: string[];
-  setAccounts: React.Dispatch<React.SetStateAction<string[]>>;
-}
-
-export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
-  const [selected, setSelected] = useState(null); // Initialize as a Set
+export const Accounts = () => {
+  const { accounts, setAccounts } = useAccountStore();
+  const { selected, setSelected } = useSelectedAccountStore();
   const [toggleInput, setToggleInput] = useState(false);
   const { value, reset, bindings } = useInput("");
 
@@ -18,7 +15,7 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
 
   useEffect(() => {
     invoke("get_real_address").then((res) => {
-      setSelected(res.toString());
+      setSelected(`${res}`);
     });
   }, []);
 
@@ -66,10 +63,10 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
               selectionMode="single"
               selectedKeys={selected}
               onAction={(key: any) => {
-                setSelected(key as string);
+                setSelected(key);
               }}
               onSelectionChange={(selection: any) => {
-                return setSelected(selection as unknown as string);
+                return setSelected(selection);
               }}
             >
               {accounts.map((account: string) => {

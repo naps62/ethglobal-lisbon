@@ -23,5 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 .next
+.env.local
 
 out/
