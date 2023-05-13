@@ -2,7 +2,6 @@ import RingLoader from 'react-spinners/RingLoader';
 import { invoke } from '@tauri-apps/api/tauri';
 import { useCallback, useEffect, useState } from 'react';
 import { RxCross2 } from 'react-icons/rx';
-import React from 'react';
 import PrankResult from '@/components/PrankResult';
 
 interface Props {

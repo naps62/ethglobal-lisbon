@@ -1,9 +1,6 @@
 import { ethers } from 'ethers';
-import React from 'react';
-import { string } from 'zod';
 
 interface Props {
-  //   result: any;
   gas_used: number;
   revert: boolean;
   logs: any[];
@@ -29,11 +26,11 @@ export default function PrankResult(props: Props) {
   );
 }
 
-function GasUsed({ gas }) {
+function GasUsed({ gas }: { gas: number }) {
   return <div>{`${gas} gasUsed`}</div>;
 }
 
-function EthDelta({ before, after }) {
+function EthDelta({ before, after }: { before: any; after: any }) {
   let delta = after - before;
   const direction = delta > 0 ? 'received' : 'sent';
   if (delta < 0) delta = delta * -1;
@@ -46,7 +43,7 @@ function EthDelta({ before, after }) {
   );
 }
 
-function ERC20Transfers({ transfers }) {
+function ERC20Transfers({ transfers }: { transfers: any[] }) {
   return (
     <div className="grid grid-cols-4">
       <div className="border-b-2">Token</div>
@@ -60,7 +57,7 @@ function ERC20Transfers({ transfers }) {
   );
 }
 
-function ERC20Transfer({ transfer }) {
+function ERC20Transfer({ transfer }: { transfer: any }) {
   return (
     <>
       <div>{shortenAddress(transfer.token)}</div>
