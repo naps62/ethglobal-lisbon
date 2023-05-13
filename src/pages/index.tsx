@@ -1,25 +1,25 @@
-import { listen } from "@tauri-apps/api/event";
-import { Inter } from "next/font/google";
-import Header from "@/components/Header";
-import { Accounts } from "@/components";
-import Details from "@/components/Details";
-import Balance from "@/components/Balance";
-import Modal from "@/components/Modal";
-import { useEffect, useState, useCallback } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
+import { listen } from '@tauri-apps/api/event';
+import { Inter } from 'next/font/google';
+import Header from '@/components/Header';
+import { Accounts } from '@/components';
+import Details from '@/components/Details';
+import Balance from '@/components/Balance';
+import Modal from '@/components/Modal';
+import { useEffect, useState, useCallback } from 'react';
+import { invoke } from '@tauri-apps/api/tauri';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(true);
   const [accounts, setAccounts] = useState([]);
   const [pendingTx, setPendingTx] = useState({});
   const [txid, setTxid] = useState(0);
 
   useEffect(() => {
-    const unlisten = listen("tx-review", ({ payload }: { payload: any }) => {
-      setTxid(payload["TxReview"][0]);
-      setPendingTx(payload["TxReview"][1]);
+    const unlisten = listen('tx-review', ({ payload }: { payload: any }) => {
+      setTxid(payload['TxReview'][0]);
+      setPendingTx(payload['TxReview'][1]);
       setModalOpen(true);
     });
 
@@ -29,7 +29,7 @@ export default function Home() {
   });
 
   useEffect(() => {
-    invoke("get_real_address").then((res) => {
+    invoke('get_real_address').then((res) => {
       setAccounts([res.toString(), ...accounts]);
     });
   }, []);
