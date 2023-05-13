@@ -1,8 +1,8 @@
-import { useAccount, useProvider } from '@/hooks';
-import { BigNumber } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils.js';
-import { useEffect, useState } from 'react';
-import { getETHPrice, getERC20Price } from '@/utils/getEthPrice';
+import { useAccount, useProvider } from "@/hooks";
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils.js";
+import { useEffect, useState } from "react";
+import { getETHPrice, getERC20Price } from "@/utils/getEthPrice";
 
 export default function Balance() {
   const account = useAccount();
@@ -18,12 +18,13 @@ export default function Balance() {
     });
   });
 
+  console.log(exchangeRate);
   useEffect(() => {
-    console.log('in effect');
+    console.log("in effect");
     (async function () {
-      console.log('in internal');
+      console.log("in internal");
       const ethPrice = await getETHPrice();
-      console.log('ethPrice', ethPrice);
+      console.log("ethPrice", ethPrice);
       setExchangeRate(ethPrice);
     })();
     // (async function () {
@@ -33,10 +34,12 @@ export default function Balance() {
     // })();
   }, []);
 
+  let usd = ((formatUnits(balance) as any) * exchangeRate).toFixed(2);
+
   return (
     <div className="flex flex-col pt-8 items-center">
       <div className="text-3xl w-18">{formatUnits(balance)} ETH</div>
-      <div>{formatUnits(balance) * exchangeRate}</div>
+      <div>{usd}$</div>
     </div>
   );
 }
