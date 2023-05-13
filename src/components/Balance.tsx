@@ -1,9 +1,9 @@
-import { useAccount, useProvider } from '@/hooks';
-import { BigNumber } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils.js';
-import { useEffect, useState } from 'react';
-import { getETHPrice, getERC20Price } from '@/utils/getPrice';
-import addCommas from '@/utils/addCommas';
+import { useAccount, useProvider } from "@/hooks";
+import { BigNumber } from "ethers";
+import { formatUnits } from "ethers/lib/utils.js";
+import { useEffect, useState } from "react";
+import { getETHPrice, getERC20Price } from "@/utils/getPrice";
+import addCommas from "@/utils/addCommas";
 
 export default function Balance() {
   const account = useAccount();
@@ -17,18 +17,13 @@ export default function Balance() {
     provider.getBalance(account).then((balance: BigNumber) => {
       setBalance(balance);
     });
-  });
+  }, [account]);
 
   useEffect(() => {
     (async function () {
       const ethPrice = await getETHPrice();
       setExchangeRate(ethPrice);
     })();
-    // (async function () {
-    //   console.log('in internal');
-    //   const erc20Price = await getERC20Price();
-    //   console.log('erc20Price', erc20Price);
-    // })();
   }, []);
 
   let eth = ((formatUnits(balance) as any) * 1).toFixed(2);
