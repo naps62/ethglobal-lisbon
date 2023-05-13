@@ -2,6 +2,7 @@ import { useSelectedAccountStore } from "@/hooks";
 import { init, fetchQuery } from "@airstack/airstack-react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
+import { Loading } from "@nextui-org/react";
 // import { getERC20Price } from "../../utils";
 
 init(process.env.NEXT_PUBLIC_AIRSTACK_API_KEY as string);
@@ -83,25 +84,31 @@ export const SearchAccounts = ({ address }: { address: string }) => {
   }, [address]);
 
   if (!data || !data?.TokenBalances) {
-    return <p>Loading...</p>;
+    return (
+      <div className="flex items-center mt-11 justify-center">
+        <Loading type="gradient" size="lg">
+          <div className="font-mono text-sm">Loading tokens...</div>
+        </Loading>
+      </div>
+    );
   }
   return (
     <div>
       {data?.TokenBalances.TokenBalance.map((token: TokenInfo) => (
         <div
           key={token.tokenAddress}
-          className="font-mono flex border-b-2 w-full h-40 px-10 items-center justify-center"
+          className="font-mono flex border-b-2 w-full h-40 justify-center items-center px-10"
         >
-          <div className="flex-col items-center justify-between w-full">
+          <div className="flex-col items-center justify-between h-30 w-full">
             <div>
               Symbol:{" "}
               <span className="font-bold">{token.token.symbol || "N/A"}</span>
             </div>
-            <div>{ethers.utils.formatEther(token.amount)}</div>
+            <div>Balance: {ethers.utils.formatEther(token.amount)}</div>
             {/* <div>USD: {getERC20Price(token.tokenAddress)}</div> */}
-            <div>{token.tokenAddress}</div>
+            <div className="text-sm">Token Address: {token.tokenAddress}</div>
           </div>
-          <div>{token.tokenType}</div>
+          <div className="ml-5 italic">{token.tokenType}</div>
         </div>
       ))}
     </div>

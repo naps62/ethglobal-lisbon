@@ -1,10 +1,10 @@
-import RingLoader from "react-spinners/RingLoader";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { useProvider } from "../hooks";
 import { Contract } from "ethers";
 import PrankResult from "@/components/PrankResult";
+import { Loading } from "@nextui-org/react";
 
 interface Props {
   close: () => void;
@@ -94,7 +94,9 @@ export default function Modal({ close, pendingTx, txid }: Props) {
           </div>
         ) : (
           <div className="flex justify-around items-center h-full">
-            <RingLoader color="#000" size={190} />
+            <Loading type="gradient" size="lg">
+              <div className="font-mono text-sm">Simulating txn...</div>
+            </Loading>
           </div>
         )}
       </div>
