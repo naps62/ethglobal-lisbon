@@ -2,7 +2,7 @@ import { useAccount, useProvider } from '@/hooks';
 import { BigNumber } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils.js';
 import { useEffect, useState } from 'react';
-import { getETHPrice } from '@/utils/getEthPrice';
+import { getETHPrice, getERC20Price } from '@/utils/getEthPrice';
 
 export default function Balance() {
   const account = useAccount();
@@ -19,10 +19,15 @@ export default function Balance() {
 
   useEffect(() => {
     console.log('in effect');
-    (async function getEthPrice() {
+    (async function () {
       console.log('in internal');
       const ethPrice = await getETHPrice();
       console.log('ethPrice', ethPrice);
+    })();
+    (async function () {
+      console.log('in internal');
+      const erc20Price = await getERC20Price();
+      console.log('erc20Price', erc20Price);
     })();
   }, []);
 
