@@ -15,6 +15,7 @@ query Staker {
     id
     account
     stakedAmount
+    creditLimit
   }
 }
 `;
@@ -25,5 +26,7 @@ query Staker {
 
   const stakers = response?.data?.stakers;
 
-  return stakers.length === 0 ? 0 : stakers[0].stakedAmount;
+  return stakers.length === 0
+    ? { staked: 0, limit: 0 }
+    : { staked: stakers[0].stakedAmount, limit: stakers[0].creditLimit };
 };

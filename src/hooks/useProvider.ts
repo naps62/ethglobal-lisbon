@@ -1,7 +1,7 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { useEffect, useState } from "react";
 
-import { Network } from "../types/index.ts";
+import { Network } from "../types";
 import { useInvoke } from "./tauri";
 
 export function useProvider() {
