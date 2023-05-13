@@ -1,42 +1,42 @@
-import { useEffect, useState } from 'react';
-import { SearchAccounts } from './get-accounts/SearchAccounts';
-import { Menu } from './Menu';
-import { useSelectedAccountStore } from '@/hooks';
-import Union from './Union';
+import { useEffect, useState } from "react";
+import { SearchAccounts } from "./get-accounts/SearchAccounts";
+import { Menu } from "./Menu";
+import { useSelectedAccountStore } from "@/hooks";
+import Union from "./Union";
 import { queryStaker } from "@/union";
+import { SearchTokenAddress } from "./get-accounts/SearchTokenAddress";
 
 export default function Details() {
-  const [active, setActive] = useState('assets');
+  const [active, setActive] = useState("assets");
   const [assets, setAssets] = useState([
     {
-      name: 'ETH',
-      logo: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880',
+      name: "ETH",
+      logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
       balance: 0.0,
     },
     {
-      name: 'USDC',
-      logo: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389',
+      name: "USDC",
+      logo: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389",
       balance: 0.0,
     },
   ]);
   const { selected } = useSelectedAccountStore();
-  const [union, setUnion] = useState(0)
+  const [union, setUnion] = useState(0);
 
   useEffect(() => {
-    if (selected === null || selected === undefined ) return;
-     queryStaker(selected ).then(result => setUnion(result));
+    if (selected === null || selected === undefined) return;
+    queryStaker(selected).then((result) => setUnion(result));
   }, [selected]);
-
 
   return (
     <div className="">
       <Menu active={active} setActive={setActive} />
       <div className="flex justify-center">
-        {active === 'assets' && <Assets assets={assets} />}
-        {active === 'activity' && (
+        {active === "assets" && <SearchTokenAddress />}
+        {active === "activity" && (
           <SearchAccounts address={selected as string} />
         )}
-        {active === 'union' && <Union union={union}/>}
+        {active === "union" && <Union union={union} />}
       </div>
     </div>
   );
@@ -48,7 +48,6 @@ interface Asset {
 }
 
 function Assets({ assets }: { assets: Asset[] }) {
-
   return (
     <div className="w-full">
       {assets.map((asset) => (

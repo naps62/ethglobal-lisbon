@@ -93,11 +93,16 @@ export const Accounts = () => {
           </Dropdown>
         </div>
       )}
-      <Button className="ml-2" color="success" auto onClick={onClickHandler}>
+      <Button className="ml-2" color="primary" auto onClick={onClickHandler}>
         {toggleInput ? "Submit" : "Impersonate"}
       </Button>
       {toggleInput && (
-        <Button className="ml-2" color="error" auto onClick={onCancelHandler}>
+        <Button
+          className="ml-2"
+          color="secondary"
+          auto
+          onClick={onCancelHandler}
+        >
           Cancel
         </Button>
       )}

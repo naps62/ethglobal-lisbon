@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { Loading } from "@nextui-org/react";
 // import { getERC20Price } from "../../utils";
+import { TokenInfo, TokenBalancePalyoad } from "@/types";
 
 init(process.env.NEXT_PUBLIC_AIRSTACK_API_KEY as string);
 
@@ -59,19 +60,6 @@ const getTokenByAddressInput = {
   address: "0x21b6f7071fcD3F4026571A754c7Df887060B34D5",
 };
 
-type TokenInfo = {
-  amount: string;
-  token: { name: string; symbol: string };
-  tokenAddress: string;
-  tokenType: string;
-};
-
-interface TokenBalancePalyoad {
-  TokenBalances: {
-    TokenBalance: TokenInfo[];
-  };
-}
-
 export const SearchAccounts = ({ address }: { address: string }) => {
   const [data, setData] = useState<TokenBalancePalyoad>();
   useEffect(() => {
@@ -104,7 +92,12 @@ export const SearchAccounts = ({ address }: { address: string }) => {
               Symbol:{" "}
               <span className="font-bold">{token.token.symbol || "N/A"}</span>
             </div>
-            <div>Balance: {ethers.utils.formatEther(token.amount)}</div>
+            <div>
+              Balance:{" "}
+              {token.tokenType === "ERC721"
+                ? token.amount
+                : ethers.utils.formatEther(token.amount)}
+            </div>
             {/* <div>USD: {getERC20Price(token.tokenAddress)}</div> */}
             <div className="text-sm">Token Address: {token.tokenAddress}</div>
           </div>

@@ -34,3 +34,27 @@ export const walletSchema = z.object({
 
 export type Address = `0x${string}`;
 export type Wallet = z.infer<typeof walletSchema>;
+
+export type TokenInfo = {
+  amount: string;
+  token: { name: string; symbol: string };
+  tokenAddress: string;
+  tokenType: string;
+};
+
+export interface TokenBalancePalyoad {
+  TokenBalances: {
+    TokenBalance: TokenInfo[];
+  };
+}
+
+export type AddressInfo = {
+  amount: string;
+  owner: { addresses: string[]; primaryDomain: string; domains: string };
+};
+
+export interface TokenBalanceAddressPayload {
+  TokenBalances: {
+    TokenBalance: AddressInfo[];
+  };
+}
