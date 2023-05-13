@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 interface AccountState {
   accounts: string[];
@@ -12,10 +12,16 @@ interface SelectedAccountState {
 
 export const useAccountStore = create<AccountState>((set) => ({
   accounts: [],
-  setAccounts: (newAccounts) => set(() => ({ accounts: newAccounts })),
+  setAccounts: (newAccounts) => {
+    console.log('useAccountStore');
+    return set(() => ({ accounts: newAccounts }));
+  },
 }));
 
 export const useSelectedAccountStore = create<SelectedAccountState>((set) => ({
   selected: null,
-  setSelected: (newSelected) => set(() => ({ selected: newSelected })),
+  setSelected: (newSelected) => {
+    console.log('useSelectedAccountStore');
+    return set(() => ({ selected: newSelected }));
+  },
 }));

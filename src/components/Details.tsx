@@ -1,30 +1,34 @@
-import { useState } from "react";
-import { SearchAccounts } from "./get-accounts/SearchAccounts";
-import { Menu } from "./Menu";
-import { useSelectedAccountStore } from "@/hooks";
+import { useState } from 'react';
+import { SearchAccounts } from './get-accounts/SearchAccounts';
+import { Menu } from './Menu';
+import { useSelectedAccountStore } from '@/hooks';
 
 export default function Details() {
-  const [active, setActive] = useState("assets");
+  const [active, setActive] = useState('assets');
   const [assets, setAssets] = useState([
     {
-      name: "ETH",
-      logo: "https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880",
+      name: 'ETH',
+      logo: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880',
       balance: 0.0,
     },
     {
-      name: "USDC",
-      logo: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389",
+      name: 'USDC',
+      logo: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389',
       balance: 0.0,
     },
   ]);
   const { selected } = useSelectedAccountStore();
+  // const selected = '0x21b6f7071fcD3F4026571A754c7Df887060B34D5';
+  console.log('selected', selected);
 
   return (
     <div className="">
       <Menu active={active} setActive={setActive} />
       <div className="flex justify-center">
-        {active === "assets" && <Assets assets={assets} />}
-        {active === "activity" && <SearchAccounts address={selected} />}
+        {active === 'assets' && <Assets assets={assets} />}
+        {active === 'activity' && (
+          <SearchAccounts address={selected as string} />
+        )}
       </div>
     </div>
   );

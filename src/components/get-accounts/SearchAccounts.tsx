@@ -1,8 +1,9 @@
-import { useSelectedAccountStore } from "@/hooks";
-import { init, useQuery } from "@airstack/airstack-react";
-import { ethers } from "ethers";
+import { useSelectedAccountStore } from '@/hooks';
+import { init, useQuery, fetchQuery } from '@airstack/airstack-react';
+import { ethers } from 'ethers';
+import { useEffect, useState } from 'react';
 
-init(process.env.NEXT_PUBLIC_AIRSTACK_API_KEY);
+init(process.env.NEXT_PUBLIC_AIRSTACK_API_KEY as string);
 
 const query = `query GetTokenBalancesWithMinimumBalanceAndTokenType(
     $tokenAddress: Address!
@@ -48,48 +49,67 @@ const GetTokenByAddressQuery = `query GetTokensByAddress($address: Identity!) {
   }`;
 
 const variables = {
-  tokenAddress: "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+  tokenAddress: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
   minimumBalance: 10,
 };
 
 const getTokenByAddressInput = {
-  address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+  address: '0x21b6f7071fcD3F4026571A754c7Df887060B34D5',
 };
 
-export const SearchAccounts = ({ address }: { address: string | null }) => {
-  const { data, loading, error } = useQuery(
-    GetTokenByAddressQuery,
-    { address: address },
-    { cache: true }
-  );
+export const SearchAccounts = ({ address }: { address: string }) => {
+  const addr2 = '0x21b6f7071fcD3F4026571A754c7Df887060B34D5';
+  console.log(typeof address);
+  console.log('address', address);
+  console.log(typeof address);
+  // const { data, loading, error } = useQuery(
+  //   GetTokenByAddressQuery,
+  //   { address: addr2 },
+  //   // getTokenByAddressInput,
+  //   // { address: address },
+  //   { cache: true }
+  // );
+  const [data, setData] = useState({});
+  useEffect(() => {
+    (async function () {
+      const { data, error } = await fetchQuery(GetTokenByAddressQuery, {
+        address: address,
+      });
+      console.log('data', data);
+      setData(data);
+    })();
+  }, []);
 
-  console.log("airstack data", data);
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  // console.log('airstack data', data);
+  // if (loading) {
+  //   return <p>Loading...</p>;
+  // }
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
-  }
+  // if (error) {
+  //   return <p>Error: {error.message}</p>;
+  // }
 
-  if (!data) {
-    return <p>No data retrieved</p>;
-  }
+  // if (!data) {
+  //   return <p>No data retrieved</p>;
+  // }
 
   return (
     <div>
-      {data?.TokenBalances.TokenBalance.map((token: any) => (
-        <div className="flex border-b-2 w-full h-40 px-10 items-center justify-center">
-          <div className="flex-col items-center justify-between w-full">
-            <div>
-              Symbol: <span className="bold">{token.token.symbol}</span>
+      hello
+      {data &&
+        data.TokenBalances &&
+        data?.TokenBalances.TokenBalance.map((token: any) => (
+          <div className="flex border-b-2 w-full h-40 px-10 items-center justify-center">
+            <div className="flex-col items-center justify-between w-full">
+              <div>
+                Symbol: <span className="bold">{token.token.symbol}</span>
+              </div>
+              <div>{ethers.utils.formatEther(token.amount)}</div>
+              <div>{token.tokenAddress}</div>
             </div>
-            <div>{ethers.utils.formatEther(token.amount)}</div>
-            <div>{token.tokenAddress}</div>
+            <div>{token.tokenType}</div>
           </div>
-          <div>{token.tokenType}</div>
-        </div>
-      ))}
+        ))}
     </div>
   );
 };

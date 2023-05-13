@@ -18,7 +18,6 @@ export default function Balance() {
     });
   });
 
-  console.log(exchangeRate);
   useEffect(() => {
     (async function () {
       const ethPrice = await getETHPrice();
