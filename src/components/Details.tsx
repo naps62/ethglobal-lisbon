@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { SearchAccounts } from './get-accounts/SearchAccounts';
 import { Menu } from './Menu';
 import { useSelectedAccountStore } from '@/hooks';
+import Union from './Union';
 
 export default function Details() {
   const [active, setActive] = useState('assets');
@@ -27,6 +28,7 @@ export default function Details() {
         {active === 'activity' && (
           <SearchAccounts address={selected as string} />
         )}
+        {active === 'union' && <Union />}
       </div>
     </div>
   );

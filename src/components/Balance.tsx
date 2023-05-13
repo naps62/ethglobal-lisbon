@@ -3,6 +3,7 @@ import { BigNumber } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils.js';
 import { useEffect, useState } from 'react';
 import { getETHPrice, getERC20Price } from '@/utils/getPrice';
+import addCommas from '@/utils/addCommas';
 
 export default function Balance() {
   const account = useAccount();
@@ -35,8 +36,10 @@ export default function Balance() {
 
   return (
     <div className="flex flex-col pt-8 items-center">
-      <div className="text-3xl w-18">{eth} ETH</div>
-      <div>{usd}$</div>
+      <div className="text-3xl w-18">{addCommas(eth)} ETH</div>
+      <div>${addCommas(usd)}</div>
     </div>
   );
 }
+
+// a function to add a comma to every 3 digits
