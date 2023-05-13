@@ -57,59 +57,52 @@ const getTokenByAddressInput = {
   address: '0x21b6f7071fcD3F4026571A754c7Df887060B34D5',
 };
 
+type TokenInfo = {
+  amount: string;
+  token: { name: string; symbol: string };
+  tokenAddress: string;
+  tokenType: string;
+};
+
+interface TokenBalancePalyoad {
+  TokenBalances: {
+    TokenBalance: TokenInfo[];
+  };
+}
+
 export const SearchAccounts = ({ address }: { address: string }) => {
-  const addr2 = '0x21b6f7071fcD3F4026571A754c7Df887060B34D5';
-  console.log(typeof address);
-  console.log('address', address);
-  console.log(typeof address);
-  // const { data, loading, error } = useQuery(
-  //   GetTokenByAddressQuery,
-  //   { address: addr2 },
-  //   // getTokenByAddressInput,
-  //   // { address: address },
-  //   { cache: true }
-  // );
-  const [data, setData] = useState({});
+  const [data, setData] = useState<TokenBalancePalyoad>();
   useEffect(() => {
     (async function () {
-      const { data, error } = await fetchQuery(GetTokenByAddressQuery, {
+      const { data } = await fetchQuery(GetTokenByAddressQuery, {
         address: address,
       });
-      console.log('data', data);
       setData(data);
     })();
   }, []);
 
-  // console.log('airstack data', data);
-  // if (loading) {
-  //   return <p>Loading...</p>;
-  // }
+  if (!data || !data?.TokenBalances) {
+    return <p>Loading...</p>;
+  }
 
-  // if (error) {
-  //   return <p>Error: {error.message}</p>;
-  // }
-
-  // if (!data) {
-  //   return <p>No data retrieved</p>;
-  // }
-
-  return (
-    <div>
-      hello
-      {data &&
-        data.TokenBalances &&
-        data?.TokenBalances.TokenBalance.map((token: any) => (
-          <div className="flex border-b-2 w-full h-40 px-10 items-center justify-center">
-            <div className="flex-col items-center justify-between w-full">
-              <div>
-                Symbol: <span className="bold">{token.token.symbol}</span>
+  if (data && data.TokenBalances) {
+    return (
+      <div>
+        {data?.TokenBalances.TokenBalance.map((token: any) => (
+          <div>
+            <div className="flex border-b-2 w-full h-40 px-10 items-center justify-center">
+              <div className="flex-col items-center justify-between w-full">
+                <div>
+                  Symbol: <span className="bold">{token.token.symbol}</span>
+                </div>
+                <div>{ethers.utils.formatEther(token.amount)}</div>
+                <div>{token.tokenAddress}</div>
               </div>
-              <div>{ethers.utils.formatEther(token.amount)}</div>
-              <div>{token.tokenAddress}</div>
+              <div>{token.tokenType}</div>
             </div>
-            <div>{token.tokenType}</div>
           </div>
         ))}
-    </div>
-  );
+      </div>
+    );
+  }
 };

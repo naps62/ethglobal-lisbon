@@ -18,8 +18,6 @@ export default function Details() {
     },
   ]);
   const { selected } = useSelectedAccountStore();
-  // const selected = '0x21b6f7071fcD3F4026571A754c7Df887060B34D5';
-  console.log('selected', selected);
 
   return (
     <div className="">
