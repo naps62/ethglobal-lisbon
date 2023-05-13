@@ -5,10 +5,6 @@ const provider = new ethers.providers.JsonRpcProvider(
 );
 
 export async function getETHPrice() {
-  // This constant describes the ABI interface of the contract, which will provide the price of ETH
-  // It looks like a lot, and it is, but this information is generated when we compile the contract
-  // We need to let ethers know how to interact with this contract.
-
   const aggregatorV3InterfaceABI = [
     {
       inputs: [
@@ -306,27 +302,20 @@ export async function getETHPrice() {
       type: 'function',
     },
   ];
-  // The address of the contract which will provide the price of ETH
   const addr = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419';
-  // We create an instance of the contract which we can interact with
   const priceFeed = new ethers.Contract(
     addr,
     aggregatorV3InterfaceABI,
     provider
   );
-  // We get the data from the last round of the contract
   let roundData = await priceFeed.latestRoundData();
-  // Determine how many decimals the price feed has (10**decimals)
   let decimals = await priceFeed.decimals();
-  // We convert the price to a number and return it
   return Number(
     (roundData.answer.toString() / Math.pow(10, decimals)).toFixed(2)
   );
 }
 
-// export async function getERC20Price(token: string) {
-export async function getERC20Price() {
-  // const web3 = new Web3("https://rpc.ankr.com/eth")
+export async function getERC20Price(tokenAddr: string) {
   const addr = '0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf';
   const feedRegistryInterfaceABI = [
     {
@@ -849,11 +838,10 @@ export async function getERC20Price() {
     provider
   );
 
-  const LINK = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
   const USD = '0x0000000000000000000000000000000000000348';
 
-  let roundData = await feedRegistry.latestRoundData(LINK, USD);
-  let decimals = await feedRegistry.decimals(LINK, USD);
+  let roundData = await feedRegistry.latestRoundData(tokenAddr, USD);
+  let decimals = await feedRegistry.decimals(tokenAddr, USD);
 
   return Number(
     (roundData.answer.toString() / Math.pow(10, decimals)).toFixed(2)
