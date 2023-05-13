@@ -8,7 +8,7 @@ import Modal from "@/components/Modal";
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useAccountStore } from "@/hooks/use-store";
-import { queryHandle } from "@/lens";
+import { queryStaker } from "@/union";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,6 +17,8 @@ export default function Home() {
   const { accounts, setAccounts } = useAccountStore();
   const [pendingTx, setPendingTx] = useState({});
   const [txid, setTxid] = useState(0);
+
+  queryStaker("0x000f4432a40560bbff1b581a8b7aded8dab80026" as String);
 
   useEffect(() => {
     const unlisten = listen("tx-review", ({ payload }: { payload: any }) => {

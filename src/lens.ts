@@ -21,7 +21,6 @@ query Profile {
   const response = await apolloClient.query({
     query: gql(query),
   });
-  console.log("Lens example data: ", response);
 
   return response?.data?.profile?.ownedBy;
 };

@@ -38,6 +38,7 @@ interface Asset {
 }
 
 function Assets({ assets }: { assets: Asset[] }) {
+
   return (
     <div className="w-full">
       {assets.map((asset) => (
