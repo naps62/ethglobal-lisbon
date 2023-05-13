@@ -40,6 +40,7 @@ impl ETHGlobalApp {
 
         let app = Builder::default()
             .invoke_handler(tauri::generate_handler![
+                commands::get_real_address,
                 commands::get_wallet,
                 commands::get_networks,
                 commands::get_current_network,

@@ -22,6 +22,12 @@ impl From<crate::error::Error> for String {
 }
 
 #[tauri::command]
+pub async fn get_real_address(ctx: Ctx<'_>) -> Result<Address> {
+    let ctx = ctx.lock().await;
+    Ok(ctx.wallet.address())
+}
+
+#[tauri::command]
 pub async fn get_current_network(ctx: Ctx<'_>) -> Result<Network> {
     let ctx = ctx.lock().await;
 
