@@ -72,7 +72,7 @@ export default function Modal({ close, pendingTx, txid }: Props) {
 
   return (
     <div
-      className="w-screen h-screen absolute bg-slate-400 bg-opacity-70 p-20 border-2 z-[1000]"
+      className="w-screen h-screen absolute bg-slate-400 bg-opacity-70 p-20 border-2 z-[1000000]"
       onClick={close}
     >
       <div
