@@ -11,7 +11,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
-  const [modalOpen, setModalOpen] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [pendingTx, setPendingTx] = useState({});
   const [txid, setTxid] = useState(0);

@@ -10,17 +10,13 @@ export default function PrankResult(props: Props) {
   return (
     <div>
       <h1>Prank Result</h1>
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       <div className="flex justify-around">
         <GasUsed gas={props.result.gas_used} />
-
         <EthDelta
           before={props.result.balance_before}
           after={props.result.balance_after}
         />
       </div>
-
-      {/* ERC20 Transfers */}
       <ERC20Transfers transfers={props.result.erc20s} />
     </div>
   );
@@ -68,7 +64,6 @@ function ERC20Transfer({ transfer }) {
   );
 }
 
-// a function that takes in an address string like 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 and outputs a string like 0xc02...756cc2
 function shortenAddress(address: string) {
   return `${address.slice(0, 5)}...${address.slice(-6)}`;
 }
