@@ -1,6 +1,6 @@
-import React from 'react';
-import { BigNumber, ethers } from 'ethers';
-import { formatEther } from 'ethers/lib/utils.js';
+import React from "react";
+import { BigNumber, ethers } from "ethers";
+import { formatEther } from "ethers/lib/utils.js";
 
 interface Props {
   gas_used: number;
@@ -41,7 +41,7 @@ function EthDelta({ before, after }: { before: BigNumber; after: BigNumber }) {
     delta = before.sub(after);
     negative = true;
   }
-  const direction = negative ? 'sent' : 'received';
+  const direction = negative ? "sent" : "received";
 
   return (
     <div className="flex">
@@ -67,7 +67,7 @@ function ERC20Transfers({ transfers }: { transfers: any[] }) {
 function ERC20Transfer({ transfer }: { transfer: any }) {
   return (
     <>
-      <div>{shortenAddress(transfer.token)}</div>
+      <div>{transfer.name}</div>
       <div>{shortenAddress(transfer.from)}</div>
       <div>{shortenAddress(transfer.to)}</div>
       <div>{ethers.utils.formatEther(BigNumber.from(transfer.amount))}</div>

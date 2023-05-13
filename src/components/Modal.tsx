@@ -2,9 +2,9 @@ import RingLoader from "react-spinners/RingLoader";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
-import {useProvider}  from "../hooks";
+import { useProvider } from "../hooks";
 import { Contract } from "ethers";
-import PrankResult from '@/components/PrankResult';
+import PrankResult from "@/components/PrankResult";
 
 interface Props {
   close: () => void;
@@ -12,22 +12,21 @@ interface Props {
   txid: number;
 }
 
-
 async function processERC20s(result: any, provider: any) {
-    result.erc20s = await Promise.all(result.erc20s.map( async erc20  => { 
-      erc20.name = await getTokenName(erc20.token,provider);
+  result.erc20s = await Promise.all(
+    result.erc20s.map(async (erc20) => {
+      erc20.name = await getTokenName(erc20.token, provider);
       return erc20;
-    }))
+    })
+  );
 
-    return result;
+  return result;
 }
 
-
 async function getTokenName(contractAddress: any, provider: any) {
-
   const abi = [
     "function name() view returns (string)",
-    "function symbol() view returns (string)"
+    "function symbol() view returns (string)",
   ];
 
   const contract = new Contract(contractAddress, abi, provider);
@@ -37,7 +36,6 @@ async function getTokenName(contractAddress: any, provider: any) {
   return `${name} (${symbol})`;
 }
 
-
 export default function Modal({ close, pendingTx, txid }: Props) {
   const [cachePending, setCachePending] = useState({});
   const [simulating, setSimulating] = useState(false);
@@ -46,16 +44,15 @@ export default function Modal({ close, pendingTx, txid }: Props) {
 
   useEffect(() => {
     if (pendingTx === cachePending) return;
-    if (provider === null || provider === undefined ) return;
+    if (provider === null || provider === undefined) return;
     setCachePending(pendingTx);
 
     setSimulating(true);
 
     invoke("simulate_tx", {
       params: pendingTx,
-    }).then( result  => {
-      processERC20s(result, provider)
-      .then( result => {
+    }).then((result) => {
+      processERC20s(result, provider).then((result) => {
         setResult(result);
         setSimulating(false);
       });
@@ -63,8 +60,8 @@ export default function Modal({ close, pendingTx, txid }: Props) {
   }, [provider, pendingTx]);
 
   const execute = useCallback(() => {
-    console.log('here');
-    invoke('execute_tx', {
+    console.log("here");
+    invoke("execute_tx", {
       id: txid,
       params: pendingTx,
     });
