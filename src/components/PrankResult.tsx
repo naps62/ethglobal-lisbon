@@ -1,6 +1,6 @@
-import React from "react";
-import { BigNumber, ethers } from "ethers";
-import { formatEther } from "ethers/lib/utils.js";
+import React from 'react';
+import { BigNumber, ethers } from 'ethers';
+import { formatEther } from 'ethers/lib/utils.js';
 
 interface Props {
   gas_used: number;
@@ -32,7 +32,7 @@ function GasUsed({ gas }: { gas: number }) {
   return <div>{`${gas} gasUsed`}</div>;
 }
 
-function EthDelta({ before, after }) {
+function EthDelta({ before, after }: { before: BigNumber; after: BigNumber }) {
   let delta;
   let negative = false;
   if (after.gt(before)) {
@@ -41,7 +41,7 @@ function EthDelta({ before, after }) {
     delta = before.sub(after);
     negative = true;
   }
-  const direction = negative ? "sent" : "received";
+  const direction = negative ? 'sent' : 'received';
 
   return (
     <div className="flex">
