@@ -88,18 +88,19 @@ export const SearchAccounts = ({ address }: { address: string }) => {
   if (data && data.TokenBalances) {
     return (
       <div>
-        {data?.TokenBalances.TokenBalance.map((token: any) => (
-          <div>
-            <div className="flex border-b-2 w-full h-40 px-10 items-center justify-center">
-              <div className="flex-col items-center justify-between w-full">
-                <div>
-                  Symbol: <span className="bold">{token.token.symbol}</span>
-                </div>
-                <div>{ethers.utils.formatEther(token.amount)}</div>
-                <div>{token.tokenAddress}</div>
+        {data?.TokenBalances.TokenBalance.map((token: TokenInfo) => (
+          <div
+            key={token.tokenAddress}
+            className="flex border-b-2 w-full h-40 px-10 items-center justify-center"
+          >
+            <div className="flex-col items-center justify-between w-full">
+              <div>
+                Symbol: <span className="bold">{token.token.symbol}</span>
               </div>
-              <div>{token.tokenType}</div>
+              <div>{ethers.utils.formatEther(token.amount)}</div>
+              <div>{token.tokenAddress}</div>
             </div>
+            <div>{token.tokenType}</div>
           </div>
         ))}
       </div>
