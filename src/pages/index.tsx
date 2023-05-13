@@ -6,14 +6,12 @@ import Details from "@/components/Details";
 import Balance from "@/components/Balance";
 import Modal from "@/components/Modal";
 import { useEffect, useState, useCallback } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
 
 const inter = Inter({ subsets: ["latin"] });
-const mockAccounts = ["0x00000000000", "0x11111111111"];
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
-  const [accounts, setAccounts] = useState(mockAccounts);
+  const [accounts, setAccounts] = useState([]);
   const [pendingTx, setPendingTx] = useState({});
   const [txid, setTxid] = useState(0);
 

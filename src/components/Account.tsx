@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Dropdown, Button, Input, useInput } from "@nextui-org/react";
 import { invoke } from "@tauri-apps/api/tauri";
 
@@ -8,20 +8,21 @@ interface AccountsType {
 }
 
 export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
-  const [selected, setSelected] = useState(accounts[0]); // Initialize as a Set
+  const [selected, setSelected] = useState(null); // Initialize as a Set
   const [toggleInput, setToggleInput] = useState(false);
   const { value, reset, bindings } = useInput("");
 
   useEffect(() => {
-    console.log(selected);
     invoke("impersonate", { address: selected });
-  }, [selected]);
-  console.log("selected", selected);
+  }, [selected, accounts]);
 
-  // const selectedValue = useMemo(
-  //   () => Array.from(selected).join("").replaceAll("_", " "),
-  //   [selected]
-  // );
+  useEffect(() => {
+    invoke("get_real_address").then((res) => {
+      setAccounts([res.toString(), ...accounts]);
+      setSelected(res.toString());
+    });
+  }, []);
+
   const onClickHandler = () => {
     if (toggleInput) {
       setAccounts([...accounts, value]);
@@ -59,11 +60,9 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
               selectionMode="single"
               selectedKeys={selected}
               onAction={(key: any) => {
-                console.log("here", key);
                 setSelected(key as string);
               }}
               onSelectionChange={(selection: any) => {
-                console.log("selection change", selection);
                 return setSelected(selection as unknown as string);
               }}
             >
