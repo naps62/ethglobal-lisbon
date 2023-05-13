@@ -1,7 +1,8 @@
-import { useAccount, useProvider } from "@/hooks";
-import { BigNumber } from "ethers";
-import { formatUnits } from "ethers/lib/utils.js";
-import { useEffect, useState } from "react";
+import { useAccount, useProvider } from '@/hooks';
+import { BigNumber } from 'ethers';
+import { formatUnits } from 'ethers/lib/utils.js';
+import { useEffect, useState } from 'react';
+import { getETHPrice } from '@/utils/getEthPrice';
 
 export default function Balance() {
   const account = useAccount();
@@ -15,7 +16,15 @@ export default function Balance() {
       setBalance(balance);
     });
   });
-  console.log(balance);
+
+  useEffect(() => {
+    console.log('in effect');
+    (async function getEthPrice() {
+      console.log('in internal');
+      const ethPrice = await getETHPrice();
+      console.log('ethPrice', ethPrice);
+    })();
+  }, []);
 
   return (
     <div className="flex flex-col pt-8 items-center">
