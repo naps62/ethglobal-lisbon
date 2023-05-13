@@ -6,7 +6,6 @@ import Details from "@/components/Details";
 import Balance from "@/components/Balance";
 import Modal from "@/components/Modal";
 import { useEffect, useState, useCallback } from "react";
-import { invoke } from "@tauri-apps/api/tauri";
 
 const inter = Inter({ subsets: ["latin"] });
 const mockAccounts = ["0x00000000000", "0x11111111111"];
@@ -32,8 +31,6 @@ export default function Home() {
     (e: any) => {
       e.preventDefault();
       setImpersonate(e.target.value);
-      console.log(e.target.value);
-      invoke("impersonate", { address: e.target.value });
     },
     [setImpersonate]
   );
@@ -50,12 +47,12 @@ export default function Home() {
       )}
       <Header />
       <div className="flex justify-center">
-        <label>Impersonate</label>
-        <input
-          type="text"
-          className="ml-2 border-2"
-          onChange={onImpersonateChange}
-        />
+        <button
+          onClick={() => setModalOpen(true)}
+          className="bg-red-500 p-4 rounded-xl"
+        >
+          Modal
+        </button>
       </div>
       <Accounts accounts={accounts} setAccounts={setAccounts} />
       <Balance />

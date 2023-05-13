@@ -2,7 +2,6 @@ import RingLoader from "react-spinners/RingLoader";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
-import RingLoader from "react-spinners/RingLoader";
 
 interface Props {
   close: () => void;
@@ -24,18 +23,6 @@ export default function Modal({ close, pendingTx, impersonate }: Props) {
       params: pendingTx,
       impersonate: maybeImpersonate,
     }).then((result) => setResult(result));
-  }, [pendingTx, impersonate]);
-
-  const maybeImpersonate = impersonate.length == 0 ? null : impersonate;
-  useEffect(() => {
-    if (pendingTx === cachePending) return;
-    setCachePending(pendingTx);
-    console.log(pendingTx, maybeImpersonate);
-
-    invoke("simulate_tx", {
-      params: pendingTx,
-      impersonate: maybeImpersonate,
-    }).then((result) => console.log(result));
   }, [pendingTx, impersonate]);
 
   return (
