@@ -2,30 +2,64 @@ import RingLoader from "react-spinners/RingLoader";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useCallback, useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
+import {useProvider}  from "../hooks";
+import { Contract } from "ethers";
 
 interface Props {
   close: () => void;
   pendingTx: {};
   txid: number;
 }
+
+
+async function processERC20s(result: any, provider: any) {
+    result.erc20s = await Promise.all(result.erc20s.map( async erc20  => { 
+      erc20.name = await getTokenName(erc20.token,provider);
+      return erc20;
+    }))
+
+    return result;
+}
+
+
+async function getTokenName(contractAddress: any, provider: any) {
+
+  const abi = [
+    "function name() view returns (string)",
+    "function symbol() view returns (string)"
+  ];
+
+  const contract = new Contract(contractAddress, abi, provider);
+  const name = await contract.name();
+  const symbol = await contract.symbol();
+  console.log(`Token Name: ${name} (${symbol})`);
+  return `${name} (${symbol})`;
+}
+
+
 export default function Modal({ close, pendingTx, txid }: Props) {
   const [cachePending, setCachePending] = useState({});
   const [simulating, setSimulating] = useState(false);
   const [result, setResult] = useState<any>("");
+  const provider = useProvider();
 
   useEffect(() => {
     if (pendingTx === cachePending) return;
+    if (provider === null || provider === undefined ) return;
     setCachePending(pendingTx);
-    console.log(pendingTx);
 
     setSimulating(true);
+
     invoke("simulate_tx", {
       params: pendingTx,
-    }).then((result) => {
-      setResult(result);
-      setSimulating(false);
+    }).then( result  => {
+      processERC20s(result, provider)
+      .then( result => {
+        setResult(result);
+        setSimulating(false);
+      });
     });
-  }, [pendingTx]);
+  }, [provider, pendingTx]);
 
   const execute = useCallback(() => {
     console.log("here");
