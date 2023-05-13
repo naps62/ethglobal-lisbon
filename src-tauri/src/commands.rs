@@ -1,13 +1,16 @@
+use ethers::types::serde_helpers::StringifiedNumeric;
 use ethers::types::Address;
 use ethers::types::U256;
 use foundry_common::selectors::pretty_calldata;
 use log::debug;
 use std::collections::HashMap;
+use std::str::FromStr;
 
 use crate::context::UnlockedContext;
 use crate::context::{Context, Network, Wallet};
 
 use crate::simulate::simulate;
+use crate::simulate::CallResult;
 
 type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;
@@ -50,37 +53,40 @@ pub async fn impersonate(ctx: Ctx<'_>, address: String) -> Result<String> {
 }
 
 #[tauri::command]
-pub async fn simulate_tx(ctx: Ctx<'_>, params: jsonrpc_core::Params) -> Result<()> {
+pub async fn simulate_tx(ctx: Ctx<'_>, params: jsonrpc_core::Params) -> Result<CallResult> {
     do_simulate(ctx.lock().await, params).await
 }
 
-pub async fn do_simulate(ctx: UnlockedContext<'_>, params: jsonrpc_core::Params) -> Result<()> {
-    let params = params.parse::<HashMap<String, String>>().unwrap();
+pub async fn do_simulate(
+    ctx: UnlockedContext<'_>,
+    params: jsonrpc_core::Params,
+) -> Result<CallResult> {
+    let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
     // Ok("placeholder. simulation result will show up here".to_string())
 
     // parse params
 
     let from = ctx.current_address();
 
-    let to = params.get("to").unwrap().to_string();
+    let to = Address::from_str(params.get("to").unwrap()).unwrap();
     let value = params
         .get("value")
         .cloned()
         .map(|v| U256::try_from(StringifiedNumeric::String(v)).unwrap())
         .unwrap_or_else(U256::default);
     let data = params.get("data").unwrap();
-    let vec_data = hex_to_bytes(data);//Vec::from_hex(data).unwrap();
+    // let vec_data = hex_to_bytes(data); //Vec::from_hex(data).unwrap();
 
     let pretty_calldata = pretty_calldata(data.clone(), false).await.ok();
 
     let bytes = ethers::types::Bytes::from_str(data).unwrap();
     let result = simulate(from, to, value, Some(bytes.to_vec()), pretty_calldata).unwrap();
-    dbg!(result);
-    Ok(())
+
+    Ok(result)
 }
 
 #[tauri::command]
-pub async fn execute_tx(ctx: Ctx<'_>, id: u64, params: jsonrpc_core::Params) -> Result<()> {
+pub async fn execute_tx(ctx: Ctx<'_>, id: u32, params: jsonrpc_core::Params) -> Result<()> {
     let mut ctx = ctx.lock().await;
 
     ctx.rcv.remove(&id).unwrap().send(params).unwrap();

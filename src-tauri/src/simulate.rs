@@ -60,26 +60,25 @@ impl EVM {
         Ok(EVM(executor))
     }
 
-    fn basic(&self, address: &str) -> Result<Option<AccountInfo>, ()> {
+    fn basic(&self, address: Address) -> Result<Option<AccountInfo>, ()> {
         let db = self.db();
 
-        let address_converted: Address = address.parse().expect("crash");
-        let acc = db.basic(address_converted.into()).expect("crash");
+        let acc = db.basic(address.into()).expect("crash");
         Ok(acc.map(Into::into))
     }
 
     fn call_raw_committing(
         &mut self,
-        caller: &str,
-        to: &str,
+        caller: Address,
+        to: Address,
         value: Option<U256>,
         data: Option<Vec<u8>>,
     ) -> Result<RawCallResult, ()> {
         let res = self
             .0
             .call_raw_committing(
-                caller_address,
-                to_address,
+                caller,
+                to,
                 data.unwrap_or_default().into(),
                 value.unwrap_or_default().into(),
             )
@@ -94,7 +93,7 @@ impl EVM {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct CallResult {
     gas_used: u64,
     reverted: bool,
@@ -105,7 +104,7 @@ pub struct CallResult {
     erc20s: Vec<ERC20Transfer>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct ERC20Transfer {
     pub token: Address,
     pub from: Address,
@@ -130,13 +129,11 @@ pub fn simulate(
     let balance_before: U256 = info.unwrap().balance.into();
 
     let result = evm
-        .call_raw_committing(&from, &to, Some(value), data)
+        .call_raw_committing(from, to, Some(value), data)
         .expect("crash");
 
     let info = evm.basic(from).unwrap();
     let balance_after: U256 = info.unwrap().balance.into();
-
-    dbg!(&result.logs);
 
     let erc20topic =
         H256::from_str("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
@@ -150,7 +147,7 @@ pub fn simulate(
             token: l.address,
             from: l.topics[1].into(),
             to: l.topics[2].into(),
-            amount: U256::from_str(&dbg!(format!("{}", l.data))).unwrap(),
+            amount: U256::from_str(&format!("{}", l.data)).unwrap(),
         })
         .collect();
 
