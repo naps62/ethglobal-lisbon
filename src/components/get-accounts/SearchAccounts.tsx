@@ -79,7 +79,7 @@ export const SearchAccounts = ({ address }: { address: string }) => {
       });
       setData(data);
     })();
-  }, []);
+  }, [address]);
 
   if (!data || !data?.TokenBalances) {
     return <p>Loading...</p>;
