@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import {useProvider}  from "../hooks";
 import { Contract } from "ethers";
+import PrankResult from '@/components/PrankResult';
 
 interface Props {
   close: () => void;
@@ -62,8 +63,8 @@ export default function Modal({ close, pendingTx, txid }: Props) {
   }, [provider, pendingTx]);
 
   const execute = useCallback(() => {
-    console.log("here");
-    invoke("execute_tx", {
+    console.log('here');
+    invoke('execute_tx', {
       id: txid,
       params: pendingTx,
     });
@@ -72,14 +73,14 @@ export default function Modal({ close, pendingTx, txid }: Props) {
 
   return (
     <div
-      className="w-screen h-screen absolute bg-slate-400 bg-opacity-70 p-20 border-2"
+      className="w-screen h-screen absolute bg-slate-400 bg-opacity-70 p-20 border-2 z-[1000]"
       onClick={close}
     >
       <div
-        className="bg-white h-full border-2 p-10 relative"
+        className="bg-white h-full border-2 p-10 relative overflow-y-scroll overflow-x-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {JSON.stringify(result)}
+        {result && <PrankResult {...result} />}
         <div className="flex justify-end absolute right-4 top-4">
           <RxCross2 className="text-3xl" onClick={close} />
         </div>
