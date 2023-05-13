@@ -105,4 +105,5 @@ export const SearchAccounts = ({ address }: { address: string }) => {
       </div>
     );
   }
+  return <div>SOMETHING WHEN WRONG</div>;
 };
