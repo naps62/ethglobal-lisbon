@@ -211,7 +211,6 @@ impl Handler {
         // sign & send
         let res = signer.send_transaction(envelope, None).await;
 
-        dbg!(&res);
         match res {
             Ok(res) => Ok(res.tx_hash().encode_hex().into()),
             Err(e) => Ok(e.to_string().into()),

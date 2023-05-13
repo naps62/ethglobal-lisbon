@@ -56,7 +56,6 @@ pub async fn get_wallet(ctx: Ctx<'_>) -> Result<Wallet> {
 pub async fn impersonate(ctx: Ctx<'_>, address: String) -> Result<()> {
     let mut ctx = ctx.lock().await;
 
-    dbg!("impersonating {}", &address);
     ctx.impersonate(address);
 
     Ok(())

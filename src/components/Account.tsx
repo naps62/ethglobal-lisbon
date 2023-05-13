@@ -3,6 +3,9 @@ import { Dropdown, Button, Input, useInput } from "@nextui-org/react";
 import { invoke } from "@tauri-apps/api/tauri";
 import { useAccountStore, useSelectedAccountStore } from "@/hooks";
 
+const ethereumAddressValidator = (value: string) =>
+  /^0x[0-9a-fA-F]{40}$/.test(value);
+
 export const Accounts = () => {
   const { accounts, setAccounts } = useAccountStore();
   const { selected, setSelected } = useSelectedAccountStore();
@@ -21,13 +24,14 @@ export const Accounts = () => {
 
   const onClickHandler = () => {
     if (toggleInput) {
-      setAccounts([...accounts, value]);
-      setSelected(value);
-      reset();
-      setToggleInput(!toggleInput);
+      if (ethereumAddressValidator(value)) {
+        setAccounts([...accounts, value]);
+        setSelected(value);
+        reset();
+      }
     } else {
-      setToggleInput(!toggleInput);
     }
+    setToggleInput(!toggleInput);
   };
 
   const onCancelHandler = () => {
