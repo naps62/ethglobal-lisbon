@@ -31,11 +31,12 @@ export default function Balance() {
     // })();
   }, []);
 
+  let eth = ((formatUnits(balance) as any) * 1).toFixed(2);
   let usd = ((formatUnits(balance) as any) * exchangeRate).toFixed(2);
 
   return (
     <div className="flex flex-col pt-8 items-center">
-      <div className="text-3xl w-18">{formatUnits(balance)} ETH</div>
+      <div className="text-3xl w-18">{eth} ETH</div>
       <div>{usd}$</div>
     </div>
   );
