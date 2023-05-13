@@ -11,9 +11,6 @@ interface Props {
 }
 
 export default function PrankResult(props: Props) {
-  //   console.log(props);
-  console.log(props.balance_before);
-  console.log(props.balance_after);
   return (
     <div>
       <h1>Prank Result</h1>
