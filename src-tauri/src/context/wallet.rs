@@ -1,5 +1,3 @@
-#![allow(unused)]
-
 use ethers::signers::coins_bip39::English;
 use ethers::signers::{MnemonicBuilder, Signer};
 use ethers::types::Address;
@@ -7,8 +5,6 @@ use ethers::utils::to_checksum;
 use ethers_core::k256::ecdsa::SigningKey;
 use serde::de::{self, MapAccess, Visitor};
 use serde::{Deserialize, Serialize};
-
-use crate::error::Result;
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -43,36 +39,12 @@ impl Default for Wallet {
 }
 
 impl Wallet {
-    pub fn derive_addresses_with_mnemonic(
-        mnemonic: &str,
-        derivation_path: &str,
-        indexes: u32,
-    ) -> Result<Vec<String>> {
-        // let mnemonic = Mnemonic::<English>::new_from_phrase(mnemonic)?;
-        let builder = MnemonicBuilder::<English>::default().phrase(mnemonic);
-
-        (0..indexes)
-            .map(|idx| -> Result<_> {
-                let signer = builder
-                    .clone()
-                    .derivation_path(&format!("{}/{}", derivation_path, idx))?
-                    .build()?;
-
-                Ok(to_checksum(&signer.address(), None))
-            })
-            .collect()
-    }
-
     pub fn address(&self) -> Address {
         self.signer.address()
     }
 
     pub fn checksummed_address(&self) -> String {
         to_checksum(&self.signer.address(), None)
-    }
-
-    pub fn derive_addresses(&self, indexes: u32) -> Result<Vec<String>> {
-        Self::derive_addresses_with_mnemonic(&self.mnemonic, &self.derivation_path, indexes)
     }
 
     pub fn build_signer(

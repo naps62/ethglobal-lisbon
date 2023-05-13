@@ -6,8 +6,8 @@ mod commands;
 mod context;
 mod error;
 mod rpc;
-mod ws;
 pub mod simulate;
+mod ws;
 
 use context::Context;
 use error::Result;
@@ -33,5 +33,3 @@ async fn main() -> Result<()> {
 
     Ok(())
 }
-
-

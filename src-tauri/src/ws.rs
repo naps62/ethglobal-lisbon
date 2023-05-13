@@ -71,7 +71,6 @@ pub async fn ws_server_loop(ctx: Context) {
 pub async fn accept_connection(socket: SocketAddr, stream: TcpStream, ctx: Context) {
     let mut query_params: HashMap<String, String> = Default::default();
     let callback = |req: &Request, res: Response| -> std::result::Result<Response, ErrorResponse> {
-        // url = Some(req.uri().clone());
         let url = Url::parse(&format!("{}{}", "http://localhost", req.uri()));
         query_params = url.unwrap().query_pairs().into_owned().collect();
         Ok(res)

@@ -1,13 +1,4 @@
-#![allow(unused)]
-
-use std::sync::{Arc, Mutex};
-
 use serde::{Deserialize, Serialize};
-use tokio::sync::mpsc;
-use url::Url;
-
-// use super::block_listener::BlockListener;
-use crate::app::Event;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Network {
@@ -18,7 +9,6 @@ pub struct Network {
     pub ws_url: Option<String>,
     pub currency: String,
     pub decimals: u32,
-    // listener: Option<Arc<Mutex<BlockListener>>>,
 }
 
 impl Network {
@@ -65,27 +55,6 @@ impl Network {
 
     pub fn chain_id_hex(&self) -> String {
         format!("0x{:x}", self.chain_id)
-    }
-
-    pub fn reset_listener(
-        &mut self,
-        window_snd: mpsc::UnboundedSender<Event>,
-    ) -> crate::error::Result<()> {
-        // if let Some(listener) = self.listener.as_ref() {
-        //     listener.lock().unwrap().stop();
-        //     self.listener = None;
-        // }
-
-        if self.dev {
-            let http_url = Url::parse(&self.http_url)?;
-            let ws_url = Url::parse(&self.ws_url.clone().unwrap())?;
-            // let mut listener =
-            //     BlockListener::new(self.chain_id, http_url, ws_url, db.clone(), window_snd);
-            // listener.run()?;
-            // self.listener = Some(Arc::new(Mutex::new(listener)));
-        }
-
-        Ok(())
     }
 }
 

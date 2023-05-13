@@ -13,7 +13,7 @@ use ethers::{
         Eip1559TransactionRequest, U256,
     },
 };
-use ethers_core::rand::{self};
+use ethers_core::rand;
 use jsonrpc_core::{ErrorCode, MetaIoHandler, Params};
 use serde_json::json;
 use tokio::sync::oneshot;
@@ -163,12 +163,11 @@ impl Handler {
         };
 
         let params = rcv.await.unwrap();
-        dbg!("hey I'm back");
 
         let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
 
         // parse params
-        let from = address; //Address::from_str(params.get("from").unwrap()).unwrap();
+        let from = address;
         let to = Address::from_str(params.get("to").unwrap()).unwrap();
         let value = params
             .get("value")

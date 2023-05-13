@@ -1,10 +1,8 @@
-#![allow(unused)]
-
 use std::collections::HashMap;
 use std::net::SocketAddr;
 
 use ethers::providers::{Http, Provider};
-use ethers::types::{Address, H256};
+use ethers::types::Address;
 use ethers_core::k256::ecdsa::SigningKey;
 use log::warn;
 use serde::Serialize;
@@ -53,10 +51,6 @@ impl ContextInner {
 
     pub async fn init(&mut self, sender: mpsc::UnboundedSender<Event>) -> Result<()> {
         self.window_snd = Some(sender);
-
-        for network in self.networks.values_mut() {
-            // network.reset_listener(&self.db, self.window_snd.as_ref().unwrap().clone())?;
-        }
 
         // this needs to be called after initialization since the deserialized signer hardcoded
         // chain_id = 1
@@ -148,10 +142,6 @@ impl ContextInner {
         self.set_current_network(new_network.name.clone())?;
 
         Ok(())
-    }
-
-    pub fn set_networks(&mut self, networks: Vec<Network>) {
-        self.networks = networks.into_iter().map(|n| (n.name.clone(), n)).collect();
     }
 
     pub fn broadcast<T: Serialize + std::fmt::Debug>(&self, msg: T) {

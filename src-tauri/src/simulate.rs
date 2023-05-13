@@ -1,8 +1,7 @@
-#![allow(unused)]
 use std::str::FromStr;
 
 use ethers::types::{Address, Log, H256, U256};
-use foundry_common::selectors::{PossibleSigs, SelectorOrSig};
+use foundry_common::selectors::PossibleSigs;
 use foundry_evm::executor::{fork::CreateFork, Executor};
 use foundry_evm::executor::{Env, RawCallResult};
 use revm::primitives::AccountInfo;
@@ -52,7 +51,7 @@ impl EVM {
             .set_tracing(tracing);
 
         if let Some(env) = env {
-            builder = builder.with_config(env.into());
+            builder = builder.with_config(env);
         }
 
         let executor = builder.build(db);
@@ -80,7 +79,7 @@ impl EVM {
                 caller,
                 to,
                 data.unwrap_or_default().into(),
-                value.unwrap_or_default().into(),
+                value.unwrap_or_default(),
             )
             .expect("crash");
 
@@ -93,18 +92,18 @@ impl EVM {
     }
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Eq, PartialEq, serde::Serialize)]
 pub struct CallResult {
-    gas_used: u64,
-    reverted: bool,
-    logs: Vec<Log>,
-    balance_before: U256,
-    balance_after: U256,
-    pretty_calldata: Option<String>,
-    erc20s: Vec<ERC20Transfer>,
+    pub gas_used: u64,
+    pub reverted: bool,
+    pub logs: Vec<Log>,
+    pub balance_before: U256,
+    pub balance_after: U256,
+    pub pretty_calldata: Option<String>,
+    pub erc20s: Vec<ERC20Transfer>,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Eq, PartialEq, serde::Serialize)]
 pub struct ERC20Transfer {
     pub token: Address,
     pub from: Address,
