@@ -93,7 +93,7 @@ impl EVM {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct CallResult {
     gas_used: u64,
     reverted: bool,
@@ -104,7 +104,7 @@ pub struct CallResult {
     erc20s: Vec<ERC20Transfer>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 pub struct ERC20Transfer {
     pub token: Address,
     pub from: Address,

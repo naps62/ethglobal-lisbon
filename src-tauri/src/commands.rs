@@ -10,6 +10,7 @@ use crate::context::UnlockedContext;
 use crate::context::{Context, Network, Wallet};
 
 use crate::simulate::simulate;
+use crate::simulate::CallResult;
 
 type Ctx<'a> = tauri::State<'a, Context>;
 type Result<T> = std::result::Result<T, String>;
@@ -52,11 +53,14 @@ pub async fn impersonate(ctx: Ctx<'_>, address: String) -> Result<String> {
 }
 
 #[tauri::command]
-pub async fn simulate_tx(ctx: Ctx<'_>, params: jsonrpc_core::Params) -> Result<()> {
+pub async fn simulate_tx(ctx: Ctx<'_>, params: jsonrpc_core::Params) -> Result<CallResult> {
     do_simulate(ctx.lock().await, params).await
 }
 
-pub async fn do_simulate(ctx: UnlockedContext<'_>, params: jsonrpc_core::Params) -> Result<()> {
+pub async fn do_simulate(
+    ctx: UnlockedContext<'_>,
+    params: jsonrpc_core::Params,
+) -> Result<CallResult> {
     let params = params.parse::<HashMap<String, String>>().unwrap();
     // Ok("placeholder. simulation result will show up here".to_string())
 
@@ -77,8 +81,8 @@ pub async fn do_simulate(ctx: UnlockedContext<'_>, params: jsonrpc_core::Params)
 
     let bytes = ethers::types::Bytes::from_str(data).unwrap();
     let result = simulate(from, to, value, Some(bytes.to_vec()), pretty_calldata).unwrap();
-    dbg!(result);
-    Ok(())
+
+    Ok(result)
 }
 
 #[tauri::command]
