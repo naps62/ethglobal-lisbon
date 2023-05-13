@@ -14,6 +14,7 @@ pub struct ETHGlobalApp {
 
 #[derive(Debug, Serialize)]
 pub enum Event {
+    RefreshAccount,
     RefreshNetwork,
     RefreshTransactions,
     RefreshConnections,
@@ -23,6 +24,7 @@ pub enum Event {
 impl Event {
     fn label(&self) -> &str {
         match self {
+            Self::RefreshAccount => "refresh-account",
             Self::RefreshNetwork => "refresh-network",
             Self::RefreshTransactions => "refresh-transactions",
             Self::RefreshConnections => "refresh-connections",

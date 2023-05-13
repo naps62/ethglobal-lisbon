@@ -69,6 +69,12 @@ impl ContextInner {
 
         let result = self.impersonate.unwrap_or_else(|| self.wallet.address());
 
+        self.window_snd
+            .as_ref()
+            .unwrap()
+            .send(Event::RefreshAccount)
+            .unwrap();
+
         self.broadcast(json!({
             "method": "accountsChanged",
             "params": [result]

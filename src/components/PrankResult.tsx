@@ -67,10 +67,17 @@ function ERC20Transfers({ transfers }: { transfers: any[] }) {
 function ERC20Transfer({ transfer }: { transfer: any }) {
   return (
     <>
-      <div>{transfer.name}</div>
+      <div>
+        {transfer.metadata.name} ({transfer.metadata.symbol})
+      </div>
       <div>{shortenAddress(transfer.from)}</div>
       <div>{shortenAddress(transfer.to)}</div>
-      <div>{ethers.utils.formatEther(BigNumber.from(transfer.amount))}</div>
+      <div>
+        {ethers.utils.formatUnits(
+          BigNumber.from(transfer.amount),
+          transfer.metadata.decimals
+        )}
+      </div>
     </>
   );
 }

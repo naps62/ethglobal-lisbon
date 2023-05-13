@@ -15,7 +15,7 @@ interface Props {
 async function processERC20s(result: any, provider: any) {
   result.erc20s = await Promise.all(
     result.erc20s.map(async (erc20) => {
-      erc20.name = await getTokenName(erc20.token, provider);
+      erc20.metadata = await getTokenMetadata(erc20.token, provider);
       return erc20;
     })
   );
@@ -23,17 +23,19 @@ async function processERC20s(result: any, provider: any) {
   return result;
 }
 
-async function getTokenName(contractAddress: any, provider: any) {
+async function getTokenMetadata(contractAddress: any, provider: any) {
   const abi = [
     "function name() view returns (string)",
     "function symbol() view returns (string)",
+    "function decimals() view returns (uint8)",
   ];
 
   const contract = new Contract(contractAddress, abi, provider);
   const name = await contract.name();
   const symbol = await contract.symbol();
+  const decimals = await contract.decimals();
   console.log(`Token Name: ${name} (${symbol})`);
-  return `${name} (${symbol})`;
+  return { name, symbol, decimals };
 }
 
 export default function Modal({ close, pendingTx, txid }: Props) {
