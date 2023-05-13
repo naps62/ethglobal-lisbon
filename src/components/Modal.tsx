@@ -121,7 +121,7 @@ export default function Modal({ close, pendingTx, txid }: Props) {
         className="bg-white h-full border-2 p-10 relative overflow-y-scroll overflow-x-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {result && <PrankResult result={result} />}
+        {result && <PrankResult {...result} />}
         <div className="flex justify-end absolute right-4 top-4">
           <RxCross2 className="text-3xl" onClick={close} />
         </div>

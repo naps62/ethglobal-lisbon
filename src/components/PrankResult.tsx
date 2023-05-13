@@ -3,21 +3,28 @@ import React from 'react';
 import { string } from 'zod';
 
 interface Props {
-  result: any;
+  //   result: any;
+  gas_used: number;
+  revert: boolean;
+  logs: any[];
+  balance_before: string;
+  balance_after: string;
+  pretty_calldata: string;
+  erc20s: any[];
 }
 
 export default function PrankResult(props: Props) {
+  //   console.log(props);
+  console.log(props.balance_before);
+  console.log(props.balance_after);
   return (
     <div>
       <h1>Prank Result</h1>
       <div className="flex justify-around">
-        <GasUsed gas={props.result.gas_used} />
-        <EthDelta
-          before={props.result.balance_before}
-          after={props.result.balance_after}
-        />
+        <GasUsed gas={props.gas_used} />
+        <EthDelta before={props.balance_before} after={props.balance_after} />
       </div>
-      <ERC20Transfers transfers={props.result.erc20s} />
+      <ERC20Transfers transfers={props.erc20s} />
     </div>
   );
 }
