@@ -1,4 +1,6 @@
-import { ethers } from 'ethers';
+import React from "react";
+import { BigNumber, ethers } from "ethers";
+import { formatEther } from "ethers/lib/utils.js";
 
 interface Props {
   gas_used: number;
@@ -16,7 +18,10 @@ export default function PrankResult(props: Props) {
       <h1>Prank Result</h1>
       <div className="flex justify-around">
         <GasUsed gas={props.gas_used} />
-        <EthDelta before={props.balance_before} after={props.balance_after} />
+        <EthDelta
+          before={BigNumber.from(props.balance_before)}
+          after={BigNumber.from(props.balance_after)}
+        />
       </div>
       <ERC20Transfers transfers={props.erc20s} />
     </div>
@@ -27,15 +32,20 @@ function GasUsed({ gas }: { gas: number }) {
   return <div>{`${gas} gasUsed`}</div>;
 }
 
-function EthDelta({ before, after }: { before: any; after: any }) {
-  let delta = after - before;
-  const direction = delta > 0 ? 'received' : 'sent';
-  if (delta < 0) delta = delta * -1;
+function EthDelta({ before, after }) {
+  let delta;
+  let negative = false;
+  if (after.gt(before)) {
+    delta = after.sub(before);
+  } else {
+    delta = before.sub(after);
+    negative = true;
+  }
+  const direction = negative ? "sent" : "received";
+
   return (
     <div className="flex">
-      <div>{`${ethers.utils.formatEther(
-        delta.toString()
-      )} ETH ${direction}`}</div>
+      <div>{`${formatEther(delta)} ETH ${direction}`}</div>
     </div>
   );
 }
@@ -60,7 +70,7 @@ function ERC20Transfer({ transfer }: { transfer: any }) {
       <div>{shortenAddress(transfer.token)}</div>
       <div>{shortenAddress(transfer.from)}</div>
       <div>{shortenAddress(transfer.to)}</div>
-      <div>{ethers.utils.formatEther(transfer.amount)}</div>
+      <div>{ethers.utils.formatEther(BigNumber.from(transfer.amount))}</div>
     </>
   );
 }
