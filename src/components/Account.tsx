@@ -27,9 +27,11 @@ export const Accounts = () => {
     if (toggleInput) {
       if (value.endsWith(".lens")) {
         queryHandle(value).then((owner) => {
+          if (owner !== null && owner !== undefined){
           setAccounts([...accounts, owner]);
           setSelected(owner);
           reset();
+          }
         });
       } else if (ethereumAddressValidator(value)) {
         setAccounts([...accounts, value]);

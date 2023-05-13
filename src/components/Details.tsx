@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SearchAccounts } from './get-accounts/SearchAccounts';
 import { Menu } from './Menu';
 import { useSelectedAccountStore } from '@/hooks';
 import Union from './Union';
+import { queryStaker } from "@/union";
 
 export default function Details() {
   const [active, setActive] = useState('assets');
@@ -19,6 +20,13 @@ export default function Details() {
     },
   ]);
   const { selected } = useSelectedAccountStore();
+  const [union, setUnion] = useState(0)
+
+  useEffect(() => {
+    if (selected === null || selected === undefined ) return;
+     queryStaker(selected ).then(result => setUnion(result));
+  }, [selected]);
+
 
   return (
     <div className="">
@@ -28,7 +36,7 @@ export default function Details() {
         {active === 'activity' && (
           <SearchAccounts address={selected as string} />
         )}
-        {active === 'union' && <Union />}
+        {active === 'union' && <Union union={union}/>}
       </div>
     </div>
   );

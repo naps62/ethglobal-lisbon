@@ -25,8 +25,5 @@ query Staker {
 
   const stakers = response?.data?.stakers;
 
-  const stakedAmount = stakers.length  == 0 ? 0 : stakers[0].stakedAmount;
-  console.log("union: ", stakedAmount);
-
-  return stakedAmount;
+  return stakers.length === 0 ? 0 : stakers[0].stakedAmount;
 };
