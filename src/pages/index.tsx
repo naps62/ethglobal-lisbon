@@ -6,6 +6,7 @@ import Details from "@/components/Details";
 import Balance from "@/components/Balance";
 import Modal from "@/components/Modal";
 import { useEffect, useState, useCallback } from "react";
+import { invoke } from "@tauri-apps/api/tauri";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,6 +27,12 @@ export default function Home() {
       unlisten.then((cb) => cb());
     };
   });
+
+  useEffect(() => {
+    invoke("get_real_address").then((res) => {
+      setAccounts([res.toString(), ...accounts]);
+    });
+  }, []);
 
   return (
     <main>

@@ -18,7 +18,6 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
 
   useEffect(() => {
     invoke("get_real_address").then((res) => {
-      setAccounts([res.toString(), ...accounts]);
       setSelected(res.toString());
     });
   }, []);
@@ -27,10 +26,16 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
     if (toggleInput) {
       setAccounts([...accounts, value]);
       setSelected(value);
+      reset();
       setToggleInput(!toggleInput);
     } else {
       setToggleInput(!toggleInput);
     }
+  };
+
+  const onCancelHandler = () => {
+    reset();
+    setToggleInput(false);
   };
 
   // TODO: address input validation
@@ -40,6 +45,7 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
       {toggleInput ? (
         <Input
           {...bindings}
+          initialValue=""
           bordered
           clearable
           color="primary"
@@ -80,6 +86,11 @@ export const Accounts: React.FC<AccountsType> = ({ accounts, setAccounts }) => {
       <Button className="ml-2" color="success" auto onClick={onClickHandler}>
         {toggleInput ? "Submit" : "Impersonate"}
       </Button>
+      {toggleInput && (
+        <Button className="ml-2" color="error" auto onClick={onCancelHandler}>
+          Cancel
+        </Button>
+      )}
     </div>
   );
 };
