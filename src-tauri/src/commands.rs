@@ -1,7 +1,10 @@
 use ethers::types::Address;
 use ethers::types::U256;
+use foundry_common::selectors::pretty_calldata;
+use log::debug;
 use std::collections::HashMap;
 
+use crate::context::UnlockedContext;
 use crate::context::{Context, Network, Wallet};
 
 use crate::simulate::simulate;
@@ -47,22 +50,17 @@ pub async fn impersonate(ctx: Ctx<'_>, address: String) -> Result<String> {
 }
 
 #[tauri::command]
-pub async fn simulate_tx(
-    ctx: Ctx<'_>,
-    params: jsonrpc_core::Params,
-) -> Result<()> {
-    let ctx = ctx.lock().await;
+pub async fn simulate_tx(ctx: Ctx<'_>, params: jsonrpc_core::Params) -> Result<()> {
+    do_simulate(ctx.lock().await, params).await
+}
 
-    
-    let params = params.parse::<Vec<HashMap<String, String>>>().unwrap()[0].clone();
+pub async fn do_simulate(ctx: UnlockedContext<'_>, params: jsonrpc_core::Params) -> Result<()> {
+    let params = params.parse::<HashMap<String, String>>().unwrap();
+    // Ok("placeholder. simulation result will show up here".to_string())
 
     // parse params
 
-    let from = if impersonate == None {
-        params.get("from").unwrap().to_string()
-    } else {
-        impersonate.unwrap().to_string()
-    };
+    let from = ctx.current_address();
 
     let to = params.get("to").unwrap().to_string();
     let value = params
@@ -73,8 +71,11 @@ pub async fn simulate_tx(
     let data = params.get("data").unwrap();
     let vec_data = hex_to_bytes(data);//Vec::from_hex(data).unwrap();
 
-    simulate(from, to, value, vec_data);
-    //simulate();
+    let pretty_calldata = pretty_calldata(data.clone(), false).await.ok();
+
+    let bytes = ethers::types::Bytes::from_str(data).unwrap();
+    let result = simulate(from, to, value, Some(bytes.to_vec()), pretty_calldata).unwrap();
+    dbg!(result);
     Ok(())
 }
 
@@ -89,14 +90,12 @@ pub async fn execute_tx(ctx: Ctx<'_>, id: u64, params: jsonrpc_core::Params) -> 
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::context::Context;
-    use crate::context::ContextInner;
-    use ethers::types::Address;
-    use crate::commands::simulate_tx;
 
-    #[test]
-    fn simulate_detris() {
-        let params =  serde_json::json!({
+    #[tokio::test(flavor = "multi_thread")]
+    async fn simulate_detris() {
+        let params = serde_json::json!({
             "from": "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503",
             "value": "0x0",
             "data": "0x1249c58b",
@@ -105,19 +104,36 @@ mod tests {
         });
 
         let string_params = serde_json::to_string(&params).unwrap();
+        let ctx = Context::new().await.unwrap();
+        let params: jsonrpc_core::Params = serde_json::from_str(&string_params).unwrap();
 
-        let ctx = ContextInner::new();
+        ctx.lock()
+            .await
+            .impersonate("0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326".into());
 
-        ctx.impersonate("0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326".into());
-
-       let params = jsonrpc_core::Params::from(string_params); 
-
-       simulate_tx(ctx, params);
-
+        do_simulate(ctx.lock().await, params).await.unwrap();
     }
 
-    fn simulate_uniswap() {
-        assert_eq!(2 + 2, 4);
+    #[tokio::test(flavor = "multi_thread")]
+    async fn simulate_uniswap() {
+        let params = serde_json::json!({
+        "from": "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503",
+        "gas": "0x3078a",
+        "to": "0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b",
+        "data": "0x3593564c000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000645ed58700000000000000000000000000000000000000000000000000000000000000020b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000000000000000000000000000059cdeffade58beb5b000000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002bc02aaa39b223fe8d0a0e5c4f27ead9083c756cc20001f46b175474e89094c44da98b954eedeac495271d0f000000000000000000000000000000000000000000",
+        "value": "0xde0b6b3a7640000",
+            });
+
+        let string_params = serde_json::to_string(&params).unwrap();
+        let ctx = Context::new().await.unwrap();
+        let params: jsonrpc_core::Params = serde_json::from_str(&string_params).unwrap();
+
+        ctx.lock()
+            .await
+            .impersonate("0x1f9090aaE28b8a3dCeaDf281B0F12828e676c326".into());
+
+        do_simulate(ctx.lock().await, params).await.unwrap();
+        assert_eq!(1, 2);
     }
 }
 
@@ -130,22 +146,4 @@ mod tests {
 // }
 
 // [src/commands.rs:65] &params = {
-//     "from": "0x47ac0fb4f2d84898e4d9e7b4dab3c24507a6d503",
-//     "gas": "0x3078a",
-//     "to": "0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b",
-//     "data": "0x3593564c00000000000000000000000000000000000000000000000000000000000000600000000
-// 0000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000
-// 0000000000000000000645ed58700000000000000000000000000000000000000000000000000000000000000020b0
-// 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-// 0000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000004
-// 000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000
-// 0000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000
-// 000020000000000000000000000000000000000000000000000000de0b6b3a76400000000000000000000000000000
-// 0000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000
-// 0000000010000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000
-// 000000000000000000000000059cdeffade58beb5b0000000000000000000000000000000000000000000000000000
-// 00000000000a0000000000000000000000000000000000000000000000000000000000000000000000000000000000
-// 0000000000000000000000000000000000000000000002bc02aaa39b223fe8d0a0e5c4f27ead9083c756cc20001f46
-// b175474e89094c44da98b954eedeac495271d0f000000000000000000000000000000000000000000",
-//     "value": "0xde0b6b3a7640000",
 // }

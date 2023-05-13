@@ -1969,6 +1969,7 @@ dependencies = [
  "ethers-core",
  "eyre",
  "fix-path-env",
+ "foundry-common",
  "foundry-evm",
  "futures-util",
  "jsonrpc-core",
