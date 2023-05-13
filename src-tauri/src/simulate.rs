@@ -1,7 +1,10 @@
 #![allow(unused)]
-use ethers::types::{Address, U256};
-use foundry_evm::executor::Env;
+use std::str::FromStr;
+
+use ethers::types::{Address, Log, H256, U256};
+use foundry_common::selectors::{PossibleSigs, SelectorOrSig};
 use foundry_evm::executor::{fork::CreateFork, Executor};
+use foundry_evm::executor::{Env, RawCallResult};
 use revm::primitives::AccountInfo;
 
 use foundry_evm::executor::DatabaseRef;
@@ -70,7 +73,7 @@ impl EVM {
         to: Address,
         value: Option<U256>,
         data: Option<Vec<u8>>,
-    ) -> Result<(), ()> {
+    ) -> Result<RawCallResult, ()> {
         let res = self
             .0
             .call_raw_committing(
@@ -86,31 +89,81 @@ impl EVM {
         }
 
         // TODO: Return the traces back to the user.
-        Ok(())
+        Ok(res)
     }
 }
 
-pub fn simulate(from: Address, to: Address, value: U256, data: Option<Vec<u8>>) {
-    let address: String = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045".into();
-    let address2: String = "0xBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB".into();
+#[derive(Debug)]
+pub struct CallResult {
+    gas_used: u64,
+    reverted: bool,
+    logs: Vec<Log>,
+    balance_before: U256,
+    balance_after: U256,
+    pretty_calldata: Option<String>,
+    erc20s: Vec<ERC20Transfer>,
+}
+
+#[derive(Debug)]
+pub struct ERC20Transfer {
+    pub token: Address,
+    pub from: Address,
+    pub to: Address,
+    pub amount: U256,
+}
+
+pub fn simulate(
+    from: Address,
+    to: Address,
+    value: U256,
+    data: Option<Vec<u8>>,
+    pretty_calldata: Option<PossibleSigs>,
+) -> Result<CallResult, ()> {
     let gas_limit = 18446744073709551615;
-    let value: U256 = 10000.into();
     let fork_url: String =
         "https://eth-mainnet.g.alchemy.com/v2/-wxu38OgTIonhR-yNbXPj4f_6eMP_fCZ".into();
 
     let mut evm = EVM::new(None, Some(fork_url), None, gas_limit, true).expect("crash");
 
-    let info = evm.basic(from);
-
-    println!("{:?}", info);
+    let info = evm.basic(from).unwrap();
+    let balance_before: U256 = info.unwrap().balance.into();
 
     let result = evm
         .call_raw_committing(from, to, Some(value), data)
         .expect("crash");
 
-    println!("{:?}", result);
+    let info = evm.basic(from).unwrap();
+    let balance_after: U256 = info.unwrap().balance.into();
 
-    let info = evm.basic(from);
+    dbg!(&result.logs);
 
-    println!("{:?}", info);
+    let erc20topic =
+        H256::from_str("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef")
+            .unwrap();
+
+    let erc20s = result
+        .logs
+        .iter()
+        .filter(|l| l.topics[0] == erc20topic)
+        .map(|l| ERC20Transfer {
+            token: l.address,
+            from: l.topics[1].into(),
+            to: l.topics[2].into(),
+            amount: U256::from_str(&dbg!(format!("{}", l.data))).unwrap(),
+        })
+        .collect();
+
+    Ok(CallResult {
+        gas_used: result.gas_used,
+        reverted: result.reverted,
+        logs: result.logs,
+        balance_before,
+        balance_after,
+        pretty_calldata: pretty_calldata.map(|c| fmt_possible_sigs(&c)),
+        erc20s,
+    })
+}
+
+fn fmt_possible_sigs(x: &PossibleSigs) -> String {
+    format!("{}", x).split("------------").take(1).collect()
 }
