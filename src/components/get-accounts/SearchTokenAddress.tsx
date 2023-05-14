@@ -1,7 +1,5 @@
-import { useSelectedAccountStore } from "@/hooks";
 import { init, fetchQuery } from "@airstack/airstack-react";
-import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FormElement, Input, Button } from "@nextui-org/react";
 import { AddressList } from "./AddressList";
 import { TokenBalanceAddressPayload } from "@/types";
@@ -42,20 +40,6 @@ const variables = {
   tokenAddress: "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
   minimumBalance: 10,
 };
-
-// type TokenInfo = {
-//   amount: string;
-//   token: { name: string; symbol: string };
-//   tokenAddress: string;
-//   tokenType: string;
-// };
-
-// interface TokenBalancePalyoad {
-//   TokenBalances: {
-//     TokenBalance: TokenInfo[];
-//   };
-// }
-
 export const SearchTokenAddress = () => {
   const [data, setData] = useState<TokenBalanceAddressPayload>();
   const [tokenAddress, setTokenAddress] = useState<string>("");

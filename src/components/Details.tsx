@@ -19,7 +19,7 @@ export default function Details() {
   return (
     <div className="">
       <Menu active={active} setActive={setActive} />
-      <div className="">
+      <div className="flex justify-center">
         {active === "assets" && <SearchTokenAddress />}
         {active === "activity" && (
           <SearchAccounts address={selected as string} />
